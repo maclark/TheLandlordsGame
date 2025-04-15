@@ -1,0 +1,18 @@
+[gd_scene load_steps=5 format=3 uid="uid://3jfoi3esvnim"]
+
+[ext_resource type="Script" uid="uid://b5t8ly5fqrupw" path="res://scripts/Landlord.gd" id="1_wylpy"]
+[ext_resource type="Script" uid="uid://dakpqbpdmper3" path="res://scripts/GameBoard.gd" id="2_78htp"]
+[ext_resource type="Script" uid="uid://dnvgakkgay4fc" path="res://scripts/BoardSquare.gd" id="3_0o7nn"]
+[ext_resource type="PackedScene" uid="uid://uw4bj6jhsr3e" path="res://PlayerToken.tscn" id="4_wylpy"]
+
+[node name="Landlord" type="Node2D"]
+script = ExtResource("1_wylpy")
+
+[node name="GameBoard" type="Node2D" parent="."]
+unique_name_in_owner = true
+script = ExtResource("2_78htp")
+
+[node name="BoardSquare" type="Node2D" parent="GameBoard"]
+script = ExtResource("3_0o7nn")
+
+[node name="PlayerToken" parent="." instance=ExtResource("4_wylpy")]
