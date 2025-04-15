@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://uw4bj6jhsr3e"]
+
+[ext_resource type="Script" uid="uid://bbxj4eg3bv34p" path="res://scripts/PlayerToken.gd" id="1_o82rg"]
+
+[node name="PlayerToken" type="Node2D"]
+script = ExtResource("1_o82rg")

@@ -1,5 +1,10 @@
 # Godot 4+ specific ignores
 .godot/
+.import/
+*.godot/imported/*
+*.import
+*.uid
+
 
 # Godot-specific ignores
 .import/
@@ -13,3 +18,27 @@ export_credentials.cfg
 .mono/
 data_*/
 mono_crash.*.json
+
+### suggested by chatgpt:
+
+# OS/system files (putting the comments to the right messes it up?)
+# macOS
+# Windows
+# Windows
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+
+# Builds
+/build/
+bin/
+# Custom export folder (rename if needed)
+export/
+*.exe
+*.pck
+*.apk
+*.xcodeproj
+*.xcworkspace
