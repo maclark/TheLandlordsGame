@@ -1,6 +1,11 @@
-[gd_scene load_steps=2 format=3 uid="uid://uw4bj6jhsr3e"]
+[gd_scene load_steps=3 format=3 uid="uid://uw4bj6jhsr3e"]
 
 [ext_resource type="Script" uid="uid://bbxj4eg3bv34p" path="res://scripts/PlayerToken.gd" id="1_o82rg"]
+[ext_resource type="Texture2D" uid="uid://d30nmjmahfmd" path="res://icon.svg" id="2_dj852"]
 
 [node name="PlayerToken" type="Node2D"]
 script = ExtResource("1_o82rg")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(0.33, 0.33)
+texture = ExtResource("2_dj852")

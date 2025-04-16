@@ -1,5 +1,7 @@
 class_name Player
 
-var name : String = "unnamed"
-var is_ai : bool = false
-var square : BoardSquare
+var user : User = null
+var nickname : String = "unnamed"
+var is_ai : bool = false # AI players are associated with host user
+var square : Square
+var token : PlayerToken
