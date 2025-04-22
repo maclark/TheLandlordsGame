@@ -4,4 +4,4 @@ class_name User
 extends Node
 
 var board : GameBoard = null
-var nickname : String = "HenryGeorge"
+var nickname : String = "hg"

@@ -9,96 +9,117 @@ script = ExtResource("1_ixqiy")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 modulate = Color(0.443137, 0, 0.309804, 1)
-position = Vector2(243, 570)
+position = Vector2(335, 568)
 texture = ExtResource("3_ocn0r")
 script = ExtResource("2_8lajx")
 
 [node name="Sprite2D2" type="Sprite2D" parent="."]
 modulate = Color(0.443137, 0, 0.309804, 1)
-position = Vector2(243, 440)
+position = Vector2(335, 438)
 texture = ExtResource("3_ocn0r")
 script = ExtResource("2_8lajx")
 
 [node name="Sprite2D3" type="Sprite2D" parent="."]
 modulate = Color(0.443137, 0, 0.309804, 1)
-position = Vector2(243, 312)
+position = Vector2(335, 310)
 texture = ExtResource("3_ocn0r")
 script = ExtResource("2_8lajx")
 
 [node name="Sprite2D4" type="Sprite2D" parent="."]
 modulate = Color(0.443137, 0, 0.309804, 1)
-position = Vector2(243, 191)
+position = Vector2(335, 189)
 texture = ExtResource("3_ocn0r")
 script = ExtResource("2_8lajx")
 
 [node name="Sprite2D5" type="Sprite2D" parent="."]
 modulate = Color(0.443137, 0, 0.309804, 1)
-position = Vector2(243, 69)
+position = Vector2(335, 67)
 texture = ExtResource("3_ocn0r")
 script = ExtResource("2_8lajx")
 
 [node name="Sprite2D6" type="Sprite2D" parent="."]
 modulate = Color(0.443137, 0, 0.309804, 1)
-position = Vector2(373, 69)
+position = Vector2(465, 67)
 texture = ExtResource("3_ocn0r")
 script = ExtResource("2_8lajx")
 
 [node name="Sprite2D7" type="Sprite2D" parent="."]
 modulate = Color(0.443137, 0, 0.309804, 1)
-position = Vector2(505, 69)
+position = Vector2(597, 67)
 texture = ExtResource("3_ocn0r")
 script = ExtResource("2_8lajx")
 
 [node name="Sprite2D8" type="Sprite2D" parent="."]
 modulate = Color(0.443137, 0, 0.309804, 1)
-position = Vector2(637, 69)
+position = Vector2(729, 67)
 texture = ExtResource("3_ocn0r")
 script = ExtResource("2_8lajx")
 
 [node name="Sprite2D9" type="Sprite2D" parent="."]
 modulate = Color(0.443137, 0, 0.309804, 1)
-position = Vector2(766, 69)
+position = Vector2(858, 67)
 texture = ExtResource("3_ocn0r")
 script = ExtResource("2_8lajx")
 
 [node name="Sprite2D10" type="Sprite2D" parent="."]
 modulate = Color(0.443137, 0, 0.309804, 1)
-position = Vector2(766, 199)
+position = Vector2(858, 197)
 texture = ExtResource("3_ocn0r")
 script = ExtResource("2_8lajx")
 
 [node name="Sprite2D11" type="Sprite2D" parent="."]
 modulate = Color(0.443137, 0, 0.309804, 1)
-position = Vector2(766, 330)
+position = Vector2(858, 328)
 texture = ExtResource("3_ocn0r")
 script = ExtResource("2_8lajx")
 
 [node name="Sprite2D12" type="Sprite2D" parent="."]
 modulate = Color(0.443137, 0, 0.309804, 1)
-position = Vector2(766, 457)
+position = Vector2(858, 455)
 texture = ExtResource("3_ocn0r")
 script = ExtResource("2_8lajx")
 
 [node name="Sprite2D13" type="Sprite2D" parent="."]
 modulate = Color(0.443137, 0, 0.309804, 1)
-position = Vector2(766, 573)
+position = Vector2(858, 571)
 texture = ExtResource("3_ocn0r")
 script = ExtResource("2_8lajx")
 
 [node name="Sprite2D14" type="Sprite2D" parent="."]
 modulate = Color(0.443137, 0, 0.309804, 1)
-position = Vector2(643, 573)
+position = Vector2(735, 571)
 texture = ExtResource("3_ocn0r")
 script = ExtResource("2_8lajx")
 
 [node name="Sprite2D15" type="Sprite2D" parent="."]
 modulate = Color(0.443137, 0, 0.309804, 1)
-position = Vector2(517, 573)
+position = Vector2(609, 571)
 texture = ExtResource("3_ocn0r")
 script = ExtResource("2_8lajx")
 
 [node name="Sprite2D16" type="Sprite2D" parent="."]
 modulate = Color(0.443137, 0, 0.309804, 1)
-position = Vector2(383, 573)
+position = Vector2(475, 571)
 texture = ExtResource("3_ocn0r")
 script = ExtResource("2_8lajx")
+
+[node name="StartButton" type="Button" parent="."]
+offset_left = 71.0
+offset_top = 88.0
+offset_right = 177.0
+offset_bottom = 119.0
+text = "START GAME"
+
+[node name="Roll" type="Button" parent="."]
+offset_left = 73.0
+offset_top = 137.0
+offset_right = 179.0
+offset_bottom = 168.0
+text = "ROLL"
+
+[node name="AddAI" type="Button" parent="."]
+offset_left = 74.0
+offset_top = 185.0
+offset_right = 180.0
+offset_bottom = 216.0
+text = "ADD AI"

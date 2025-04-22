@@ -6,15 +6,16 @@ var GameBoardScene = preload("res://GameBoard.tscn")
 var PlayerTokenScene = preload("res://PlayerToken.tscn")
 var PlayerClass = preload("res://scripts/Player.gd")
 var UserClass = preload("res://scripts/User.gd")
-
 var boards : Array[GameBoard] = []
+var default_player_names : Array[String] = []
 var hosting_button : Button = null
 var fake_user : User = null
+var board_count : int = 0
 
 # default settings
 const MAX_PLAYERS = 99
 const LABOR_ON_MOTHER_EARTH = 200
-const TIME_PER_TURN = 60.0
+const TIME_PER_TURN = 60.0 * 1000 # convert to ms
 const START_MONEY = 1500
 const PLAYER_COLORS = [Color.DARK_RED, Color.AQUA, Color.CHARTREUSE, Color.YELLOW]
 
@@ -23,6 +24,13 @@ func _ready() -> void:
 	hosting_button = $HostingButton
 	hosting_button.text = "HOST BOARD"
 	hosting_button.pressed.connect(pressed_hosting_button.bind(hosting_button))
+	
+	var file = FileAccess.open("res://scripts/funny_random_names.txt", FileAccess.READ)
+	while not file.eof_reached():
+		var line = file.get_line().strip_edges()
+		if line != "":
+			default_player_names.append(line)
+	file.close()
 
 func pressed_hosting_button(butt : Button) -> void:
 	# need to get user from browser somehow here
@@ -34,12 +42,13 @@ func pressed_hosting_button(butt : Button) -> void:
 		unhost_board(fake_user)
 
 func host_board(user : User) -> void:
-	var board = GameBoardScene.instantiate()
+	var board = GameBoardScene.instantiate() as GameBoard
 	add_child(board)
-	board.init_board(boards.size() + 1, self, user)
+	board_count += 1
+	board.init_board(board_count, self, user)
 	boards.append(board)
-	board.add_player(user, user.nickname, false)
-	board.add_player(user, "AI_Sam", true)
+	board.add_player(user, false)
+	board.add_ai()
 	print("hosting board_%s" % board.id)
 	# TODO make buttons for adding/remo players
 
@@ -55,6 +64,7 @@ func unhost_board(user : User) -> void:
 	for p in board.players:
 		p.user.board = null
 	boards.erase(board)
+	board.queue_free()
 	
 func make_board_public(user : User) -> void:
 	if user.board:
