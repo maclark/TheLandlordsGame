@@ -104,12 +104,19 @@ position = Vector2(475, 571)
 texture = ExtResource("3_ocn0r")
 script = ExtResource("2_8lajx")
 
-[node name="StartButton" type="Button" parent="."]
+[node name="Start" type="Button" parent="."]
 offset_left = 71.0
 offset_top = 88.0
 offset_right = 177.0
 offset_bottom = 119.0
 text = "START GAME"
+
+[node name="Skip" type="Button" parent="."]
+offset_left = 74.0
+offset_top = 229.0
+offset_right = 180.0
+offset_bottom = 260.0
+text = "SKIP"
 
 [node name="Roll" type="Button" parent="."]
 offset_left = 73.0

@@ -54,13 +54,14 @@ func init_board(new_id : int, new_lord : Landlord, new_host : User) -> void:
 	id = new_id
 	lord = new_lord
 	host = new_host 
-	var start_button: Button = $StartButton
+	var start_button: Button = $Start
 	start_button.pressed.connect(start_game)
 	var roll_button: Button = $Roll
 	roll_button.pressed.connect(roll_dice)
 	var add_ai_button: Button = $AddAI
 	add_ai_button.pressed.connect(add_ai)
-	
+	var temp_skip_button: Button = $Skip
+	temp_skip_button.pressed.connect(skip_input)
 	current_player_money = $MoneyLabel
 	assert(current_player_money)
 	
@@ -117,7 +118,9 @@ func simulate_game(delta: float) -> void:
 			# TODO this depends
 			if Time.get_ticks_msec() - time_of_last_bid > time_per_bid:
 				end_turn()
-	
+
+func skip_input() -> void:
+	end_turn()
 
 func add_ai() -> void:
 	add_player(players[0].user, true)
@@ -250,17 +253,14 @@ func process_square(p : Player, _came_from : Square, landed_on : Square) -> void
 	p.square = landed_on
 	print("%s is now on square_%d: %s" % [p.nickname, landed_on.num, landed_on.title])
 	
-	# track this, in case they don't pass Go
+	# track this, in case they unpass Go (see rules)
 	var retreated = false
 	
 	match landed_on.type:
 		Square.Type.Go:
-			# do nothing, should get the money if you looped
 			pass
 		Square.Type.Property:
-			print("property")
 			if landed_on.holder == null:
-				# start auction!
 				start_auction(landed_on)
 			elif landed_on.holder == current_player:
 				print("nothing happens, since %s owns %s" % [current_player.nickname, landed_on.title])
@@ -269,9 +269,7 @@ func process_square(p : Player, _came_from : Square, landed_on : Square) -> void
 				charge_rent(rent_due)
 		
 		Square.Type.Utility:
-			print("Utility")
 			if landed_on.holder == null:
-				# start auction!
 				start_auction(landed_on)
 			elif landed_on.holder == current_player:
 				print("nothing happens, since %s owns %s" % [current_player.nickname, landed_on.title])
@@ -281,9 +279,7 @@ func process_square(p : Player, _came_from : Square, landed_on : Square) -> void
 				charge_rent(rent_due)
 				
 		Square.Type.Railroad:
-			print("Railroad")
 			if landed_on.holder == null:
-				# start auction!
 				start_auction(landed_on)
 			elif landed_on.holder == current_player:
 				print("nothing happens, since %s owns %s" % [current_player.nickname, landed_on.title])
@@ -293,21 +289,17 @@ func process_square(p : Player, _came_from : Square, landed_on : Square) -> void
 				charge_rent(rent_due)
 				
 		Square.Type.Chance:
-			print("chance")
 			mode = Mode.ReadingCard
 		Square.Type.CommunityChest:
-			print("community chest")
 			mode = Mode.ReadingCard
 		Square.Type.Luxuries:
-			print("luxuries")
 			mode = Mode.ReadingCard
 		Square.Type.Jail:
-			print("Jail")
+			pass
 		Square.Type.BluebloodsEstate:
-			print("BluebloodsEstate")
 			mode = Mode.JailingPlayer
 		Square.Type.CollegeOrFreeLand:
-			print("CollegeOrFreeLand")
+			pass
 			
 		Square.Type.Undefined:
 			push_warning("undefined square!")
