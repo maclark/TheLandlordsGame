@@ -13,10 +13,11 @@ var fake_user : User = null
 var board_count : int = 0
 
 # default settings
-const MAX_PLAYERS = 99
-const LABOR_ON_MOTHER_EARTH = 200
-const TIME_PER_TURN = 60.0 * 1000 # convert to ms
-const START_MONEY = 1500
+const MAX_PLAYERS 				= 99
+const LABOR_ON_MOTHER_EARTH 	= 200
+const TIME_PER_TURN 			= 60.0 * 1000 # convert to ms
+const TIME_PER_BID 				= 10.0 * 1000 # convert to ms
+const START_MONEY 				= 1500
 const PLAYER_COLORS = [Color.DARK_RED, Color.AQUA, Color.CHARTREUSE, Color.YELLOW]
 
 func _ready() -> void:
