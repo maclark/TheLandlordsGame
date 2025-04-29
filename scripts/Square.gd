@@ -27,3 +27,20 @@ enum Type {
 	BluebloodsEstate,
 	CollegeOrFreeLand, # free parking
 }
+
+func _ready() -> void:
+	match type:
+		#Type.Go:
+			#modulate = Color(1, 1, 1, 1)
+		Type.Property:
+			modulate = Color(1, .5, .5, 1)
+		Type.Railroad:
+			modulate = Color(.1, .1, .1, 1)
+		Type.Utility:
+			modulate = Color(0, 0, 1, 1)
+		Type.Chance:
+			modulate = Color(1, 0, 0, 1)
+		Type.Luxuries:
+			modulate = Color(0, 1, 0, 1)
+			
+			
