@@ -106,6 +106,7 @@ func simulate_game(delta: float) -> void:
 					current_laps += 1
 				current_player.square = squares[next_square_index]
 				if current_player.square == square_going_to:
+					place_player_token(current_player, square_going_to)
 					process_square(current_player, square_came_from, square_going_to)
 					current_laps = 0
 		Mode.Rolling:
@@ -198,7 +199,7 @@ func end_turn() -> void:
 	next_turn()
 
 func roll_dice() -> void:
-	if not paused && mode == Mode.Rolling:
+	if not paused && game_started && mode == Mode.Rolling:
 		process_roll(current_player, randi_range(1, 6), randi_range(1, 6))
 	else:
 		print("no rolling dice, game hasn't started!")
@@ -225,13 +226,21 @@ func process_roll(p : Player, die0 : int, die1 : int) -> void:
 	
 
 func place_player_token(p : Player, square : Square) -> void:
-	var temp_square_width = 10.0 # only the corners are squares, actually
-	var offset = temp_square_width * Vector2(
-		randf_range(-1.0, 1.0),
-		randf_range(-1.0, 1.0)
-	)
-	p.token.position = square.position + offset
-	
+	var neighbors = players.filter(func(n): return n != p and n.square == square)
+	var spread_out = false
+	for i in range(20):
+		spread_out = true
+		p.token.position = square.position + 2.5 * i * Vector2(
+			randf_range(-1.0, 1.0),
+			randf_range(-1.0, 1.0)
+		)
+		for other in neighbors:
+			var dist = p.token.position.distance_to(other.token.position)
+			if dist < 10:
+				spread_out = false
+		if spread_out:
+			break
+			
 func pass_go() -> void:
 	print("%s labored on Mother Earth, gained $%d" % [current_player.nickname, labor_on_mother_earth])
 	current_player.money += labor_on_mother_earth
