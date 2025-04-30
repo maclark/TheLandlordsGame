@@ -10,8 +10,8 @@ var num = -1
 @export var base_rent : int = 10
 @export var house_rent : int = 5
 
-var holder : Player = null
-var houses : int = 0 # yes, corners won't have houses
+var lord : Player = null
+var houses : int = 0 # yes, corners won't have houses TODO house object, Array[House]
 var publicly_owned : bool = false
 
 enum Type {
