@@ -15,10 +15,21 @@ var player_labels: 			Array[Label] = []
 var mode:					Mode = Mode.Rolling
 var paused:					bool = false
 var game_started:			bool = false
+
+@onready var game_ui: 				Node2D = $GameUI
+@onready var noncurrent_ui:		Node2D = get_node("%LocalNonCurrentPlayerBidGroup")
+@onready var current_player_label:	Label = get_node("%CurrentPlayerLabel")
+@onready var turn_clock:			Label = get_node("%TurnClock")
+@onready var roll_butt:				Button = get_node("%Roll")
+@onready var bid_butt:				Button = get_node("%Bid")
+@onready var pass_bid_butt:			Button = get_node("%PassBid")
+@onready var build_house_butt:		Button = get_node("%BuildHouse")
+@onready var trade_butt:			Button = get_node("%Trade")
+@onready var end_turn_butt:			Button = get_node("%EndTurn")
 var current_player_index: 	int = 0
 var current_player: 		Player = null
 var turn_timer: 			float = 0.0
-var turn_clock:				Label = null
+var skip_move_animation:	bool = false
 
 var single_taxing:			bool = false
 var current_laps:			int = 0
@@ -32,12 +43,11 @@ var bidder_index:			int = 0
 var top_bid:				int = 0
 var min_bid_increment:		int = 50
 var bid_input:				LineEdit = null
-var noncurrent_ui:			Node2D = null
 var noncurrent_bid_input:	LineEdit = null
 var top_bidders:			Array[Player] = []
 var bid_button:				Label = null
 var bid_timer:				float = 0.0
-var bid_clock:				Label = null
+@onready var bid_clock:		Label = get_node("%BidClock")
 
 # adjustable game settings
 var start_money: 			int = 1
@@ -64,18 +74,27 @@ func reset_settings() -> void:
 func init_board(new_id : int, new_lord : Landlord, new_host : User) -> void:
 	reset_settings()
 	
+	game_ui.visible = false
+	
 	id = new_id
 	lord = new_lord
 	host = new_host 
 	var start_button: Button = $Start
 	start_button.pressed.connect(start_game)
-	var roll_button: Button = $Roll
-	roll_button.pressed.connect(roll_dice)
 	var add_ai_button: Button = $AddAI
 	add_ai_button.pressed.connect(add_ai)
 	var temp_skip_button: Button = $Skip
 	temp_skip_button.pressed.connect(skip_input)
-	current_player_money = $MoneyLabel
+	
+	# connect buttons
+	roll_butt.pressed.connect(roll_dice)
+	bid_butt.pressed.connect(bid_submitted)
+	pass_bid_butt.pressed.connect(pass_bid_pressed)
+	build_house_butt.pressed.connect(build_house)
+	trade_butt.pressed.connect(start_trade)
+	end_turn_butt.pressed.connect(end_turn)
+	
+	current_player_money = get_node("%MoneyLabel")
 	assert(current_player_money)
 	
 	var square_index = 0
@@ -90,6 +109,7 @@ func init_board(new_id : int, new_lord : Landlord, new_host : User) -> void:
 func start_game() -> void:
 	game_started = true
 	paused = false
+	game_ui.visible = true
 	if players.size() == 0:
 		print("can't play with no players!")
 		return
@@ -108,33 +128,39 @@ func _process(delta: float) -> void:
 func simulate_game(delta: float) -> void:
 	match mode:
 		Mode.Moving:
-			var step = delta * move_speed
-			var next_square_index = current_player.square.num + 1
-			if next_square_index == squares.size():
-				next_square_index = 0
-			var to_destination = squares[next_square_index].position - current_player.token.position 
-			current_player.token.position += to_destination.normalized() * step
-			if step > to_destination.length():
-				if next_square_index == 0: # we've reached Go!
-					current_laps += 1
-				current_player.square = squares[next_square_index]
-				if current_player.square == square_going_to:
-					place_player_token(current_player, square_going_to)
-					process_square(current_player, square_came_from, square_going_to)
-					current_laps = 0
+			var keep_going = true
+			while keep_going:
+				var step = delta * move_speed
+				var next_square_index = current_player.square.num + 1
+				if next_square_index == squares.size():
+					next_square_index = 0
+				var to_destination = squares[next_square_index].position - current_player.token.position 
+				current_player.token.position += to_destination.normalized() * step
+				if step > to_destination.length():
+					if next_square_index == 0: # we've reached Go!
+						current_laps += 1
+					current_player.square = squares[next_square_index]
+					if current_player.square == square_going_to:
+						skip_move_animation = false
+						place_player_token(current_player, square_going_to)
+						process_square(current_player, square_came_from, square_going_to)
+						current_laps = 0
+				keep_going = skip_move_animation
+				
+				
 		Mode.Rolling:
 			turn_timer -= delta
-			turn_clock.text = floor(turn_timer)
+			turn_clock.text = str(floor(turn_timer))
 			if turn_timer < 0:
 				end_turn()
 		Mode.PayingDebts:
 			turn_timer -= delta
-			turn_clock.text = floor(turn_timer)
+			turn_clock.text = str(floor(turn_timer))
 			if turn_timer < 0:
 				end_turn()
 		Mode.Bidding:
 			bid_timer -= delta
-			bid_clock.text = floor(bid_timer)
+			bid_clock.text = str(floor(bid_timer))
 			if bid_timer <= 0:
 				pass_bid()
 				
@@ -208,39 +234,44 @@ func remove_player(nickname : String) -> void:
 		print("couldn't find player with name %s " % name)
 		
 func next_turn() -> void:
-	# TODO update ui
 	mode = Mode.Rolling
 	current_player_index = (current_player_index + 1) % players.size()
 	current_player = players[current_player_index]
+	current_player_label.text = current_player.nickname
 	update_money(current_player)
-	print("now it's %s's turn!" % current_player.nickname)
+	roll_butt.disabled = false
+	roll_butt.text = "ROLL"
+	bid_butt.disabled = true
+	pass_bid_butt.disabled = true
 	turn_timer = time_per_turn
+	print("now it's %s's turn!" % current_player.nickname)
 
 func update_money(p: Player) -> void:
 	if p == current_player:
 		current_player_money.text = "MONEY: $%s" % str(current_player.money)
 	else:
 		push_warning("how do we update non current player money?")
-	
-func end_turn() -> void:
-	# TODO close dialog windows or whatever
-	next_turn()
+
 
 func roll_dice() -> void:
-	if not paused && game_started && mode == Mode.Rolling:
+	if paused or not game_started:
+		pass
+	elif mode == Mode.Rolling:
 		process_roll(current_player, randi_range(1, 6), randi_range(1, 6))
+	elif mode == Mode.Moving:
+		skip_move_animation = true
 	else:
-		print("no rolling dice, game hasn't started!")
+		print("what mode is it? maybe should disable ROLL button")
 
 func process_roll(p : Player, die0 : int, die1 : int) -> void:
 	print("%s rolled %d+%d=%d" % [p.nickname, die0, die1, (die0 + die1)])
 	if die0 == die1:
 		if p.in_jail:
 			p.in_jail = false
-			push_warning("TODO: got out of jail!")
+			#TODO
 		else:
-			push_warning("TODO: handle super highway or whatever doubles means")
-			
+			#TODO
+			pass
 	var distance = die0 + die1
 	var square_index = p.square.num + distance
 	if square_index >= squares.size():
@@ -300,6 +331,8 @@ func start_auction(for_sale : Square) -> void:
 	bidders = players.duplicate(true)
 	bidder_index = bidders.find(current_player) - 1
 	top_bid = for_sale.base_price
+	bid_butt.disabled = false
+	pass_bid_butt.disabled = false
 	next_bidder();
 	
 func conclude_auction() -> void:
@@ -322,6 +355,9 @@ func conclude_auction() -> void:
 	update_money(winner)
 	if winner != current_player:
 		charge_rent(current_player, property)
+	bid_butt.disabled = true
+	pass_bid_butt.disabled = true
+	bid_clock.text = ""
 	mode = Mode.WaitingForEndTurn
 	
 func pass_bid() -> void:
@@ -349,7 +385,7 @@ func noncurrent_local_player_pressed_bid() -> void:
 	var bidder: Player = bidders[bidder_index]
 	if noncurrent_bid_input.text.is_valid_int(): 
 		var amount = int(noncurrent_bid_input.text)
-		if amount >= top_bid:
+		if amount >= top_bid and amount >= bidder.money:
 			bid(amount)
 	else:
 		push_warning("invalid bid amount: {bid_input.text}")
@@ -383,7 +419,7 @@ func next_bidder() -> void:
 		pass
 		
 	bid_timer = time_per_bid
-	bid_clock.text = floor(bid_timer)
+	bid_clock.text = str(floor(bid_timer))
 	
 func process_square(p : Player, _came_from : Square, landed_on : Square) -> void:
 	p.square = landed_on
@@ -413,9 +449,9 @@ func process_square(p : Player, _came_from : Square, landed_on : Square) -> void
 				charge_rent(current_player, landed_on)
 				
 		Square.Type.Railroad:
-			if landed_on.holder == null:
+			if landed_on.lord == null:
 				start_auction(landed_on)
-			elif landed_on.holder == current_player:
+			elif landed_on.lord == current_player:
 				print("nothing happens, since %s owns %s" % [current_player.nickname, landed_on.title])
 			else:
 				push_warning("calculate Railroad rent")
@@ -444,3 +480,15 @@ func process_square(p : Player, _came_from : Square, landed_on : Square) -> void
 		
 	end_turn()
 	
+func bid_submitted() -> void:
+	pass
+func pass_bid_pressed() -> void:
+	pass
+func build_house() -> void:
+	pass
+func start_trade() -> void:
+	pass
+			
+func end_turn() -> void:
+	# TODO close dialog windows or whatever
+	next_turn()

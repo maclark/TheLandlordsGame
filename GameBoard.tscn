@@ -141,28 +141,33 @@ offset_right = 180.0
 offset_bottom = 156.0
 text = "ADD AI"
 
-[node name="CurrentPlayerLabel" type="Label" parent="."]
+[node name="GameUI" type="Node2D" parent="."]
+
+[node name="CurrentPlayerLabel" type="Label" parent="GameUI"]
+unique_name_in_owner = true
 offset_left = 74.0
 offset_top = 231.0
 offset_right = 195.0
 offset_bottom = 254.0
 text = "(current player)"
 
-[node name="Roll" type="Button" parent="."]
+[node name="Roll" type="Button" parent="GameUI"]
+unique_name_in_owner = true
 offset_left = 74.0
 offset_top = 312.0
 offset_right = 180.0
 offset_bottom = 343.0
 text = "ROLL"
 
-[node name="Bid" type="Button" parent="."]
+[node name="Bid" type="Button" parent="GameUI"]
+unique_name_in_owner = true
 offset_left = 74.0
 offset_top = 351.0
 offset_right = 180.0
 offset_bottom = 382.0
 text = "BID"
 
-[node name="LineEdit" type="LineEdit" parent="Bid"]
+[node name="LineEdit" type="LineEdit" parent="GameUI/Bid"]
 layout_mode = 0
 offset_left = 106.0
 offset_right = 174.563
@@ -170,42 +175,56 @@ offset_bottom = 31.0
 text = "000"
 alignment = 2
 
-[node name="Pass" type="Button" parent="."]
+[node name="BidClock" type="Label" parent="GameUI/Bid"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 121.0
+offset_top = -24.0
+offset_right = 161.0
+offset_bottom = -1.0
+
+[node name="PassBid" type="Button" parent="GameUI"]
+unique_name_in_owner = true
 offset_left = 74.0
 offset_top = 391.0
 offset_right = 180.0
 offset_bottom = 422.0
 text = "PASS"
 
-[node name="BuildHouse" type="Button" parent="."]
+[node name="BuildHouse" type="Button" parent="GameUI"]
+unique_name_in_owner = true
 offset_left = 74.0
 offset_top = 432.0
 offset_right = 189.0
 offset_bottom = 463.0
 text = "BUILD HOUSE"
 
-[node name="Trade" type="Button" parent="."]
+[node name="Trade" type="Button" parent="GameUI"]
+unique_name_in_owner = true
 offset_left = 74.0
 offset_top = 473.0
 offset_right = 189.0
 offset_bottom = 504.0
 text = "TRADE..."
 
-[node name="EndTurn" type="Button" parent="."]
+[node name="EndTurn" type="Button" parent="GameUI"]
+unique_name_in_owner = true
 offset_left = 74.0
 offset_top = 512.0
 offset_right = 180.0
 offset_bottom = 543.0
 text = "END TURN"
 
-[node name="MoneyLabel" type="Label" parent="."]
+[node name="MoneyLabel" type="Label" parent="GameUI"]
+unique_name_in_owner = true
 offset_left = 74.0
 offset_top = 588.0
 offset_right = 141.0
 offset_bottom = 611.0
 text = "MONEY: "
 
-[node name="TimeLeftLabel" type="Label" parent="."]
+[node name="TurnClock" type="Label" parent="GameUI"]
+unique_name_in_owner = true
 offset_left = 96.0
 offset_top = 280.0
 offset_right = 163.0
@@ -213,15 +232,16 @@ offset_bottom = 303.0
 text = "59"
 horizontal_alignment = 1
 
-[node name="LocalNonCurrentPlayerBidGroup" type="Node2D" parent="."]
+[node name="LocalNonCurrentPlayerBidGroup" type="Node2D" parent="GameUI"]
+unique_name_in_owner = true
 position = Vector2(952, 351)
 
-[node name="Bid2" type="Button" parent="LocalNonCurrentPlayerBidGroup"]
+[node name="Bid2" type="Button" parent="GameUI/LocalNonCurrentPlayerBidGroup"]
 offset_right = 106.0
 offset_bottom = 31.0
 text = "BID"
 
-[node name="LineEdit" type="LineEdit" parent="LocalNonCurrentPlayerBidGroup/Bid2"]
+[node name="LineEdit" type="LineEdit" parent="GameUI/LocalNonCurrentPlayerBidGroup/Bid2"]
 layout_mode = 0
 offset_left = 106.0
 offset_right = 174.563
@@ -229,7 +249,7 @@ offset_bottom = 31.0
 text = "000"
 alignment = 2
 
-[node name="Pass2" type="Button" parent="LocalNonCurrentPlayerBidGroup"]
+[node name="Pass2" type="Button" parent="GameUI/LocalNonCurrentPlayerBidGroup"]
 offset_top = 40.0
 offset_right = 106.0
 offset_bottom = 71.0
