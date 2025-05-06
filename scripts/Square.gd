@@ -30,17 +30,23 @@ enum Type {
 
 func _ready() -> void:
 	match type:
-		#Type.Go:
+		Type.Go:
 			#modulate = Color(1, 1, 1, 1)
+			title = "Go"
 		Type.Property:
 			modulate = Color(1, .5, .5, 1)
+			title = "St. James Place"
 		Type.Railroad:
 			modulate = Color(.1, .1, .1, 1)
+			title = "Railroad"
 		Type.Utility:
 			modulate = Color(0, 0, 1, 1)
+			title = "Utility"
 		Type.Chance:
 			modulate = Color(1, 0, 0, 1)
+			title = "Chance"
 		Type.Luxuries:
 			modulate = Color(0, 1, 0, 1)
+			title = "Luxuries"
 			
 			

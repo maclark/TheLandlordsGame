@@ -16,7 +16,7 @@ var board_count : int = 0
 const MAX_PLAYERS 				= 99
 const LABOR_ON_MOTHER_EARTH 	= 200
 const TIME_PER_TURN 			= 60.0
-const TIME_PER_BID 				= 10.0
+const TIME_PER_BID 				= 1000.0
 const START_MONEY 				= 1500
 const PLAYER_COLORS = [Color.DARK_RED, Color.AQUA, Color.CHARTREUSE, Color.YELLOW]
 

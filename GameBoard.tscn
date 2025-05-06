@@ -1,124 +1,23 @@
-[gd_scene load_steps=4 format=3 uid="uid://kygwgromgru3"]
+[gd_scene load_steps=5 format=3 uid="uid://kygwgromgru3"]
 
 [ext_resource type="Script" uid="uid://dakpqbpdmper3" path="res://scripts/GameBoard.gd" id="1_ixqiy"]
 [ext_resource type="Script" uid="uid://dnvgakkgay4fc" path="res://scripts/Square.gd" id="2_8lajx"]
 [ext_resource type="Texture2D" uid="uid://d30nmjmahfmd" path="res://icon.svg" id="3_ocn0r"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ocn0r"]
+
 [node name="GameBoard" type="Node2D"]
 script = ExtResource("1_ixqiy")
 move_speed = 500.0
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
-modulate = Color(0.443137, 0, 0.309804, 1)
-position = Vector2(335, 568)
-texture = ExtResource("3_ocn0r")
-script = ExtResource("2_8lajx")
-type = 1
+[node name="DebugUI" type="Node2D" parent="."]
+position = Vector2(952, 611)
 
-[node name="Sprite2D2" type="Sprite2D" parent="."]
-modulate = Color(0.443137, 0, 0.309804, 1)
-position = Vector2(335, 438)
-texture = ExtResource("3_ocn0r")
-script = ExtResource("2_8lajx")
-type = 2
-
-[node name="Sprite2D3" type="Sprite2D" parent="."]
-modulate = Color(0.443137, 0, 0.309804, 1)
-position = Vector2(335, 310)
-texture = ExtResource("3_ocn0r")
-script = ExtResource("2_8lajx")
-type = 4
-
-[node name="Sprite2D4" type="Sprite2D" parent="."]
-modulate = Color(0.443137, 0, 0.309804, 1)
-position = Vector2(335, 189)
-texture = ExtResource("3_ocn0r")
-script = ExtResource("2_8lajx")
-type = 2
-
-[node name="Sprite2D5" type="Sprite2D" parent="."]
-modulate = Color(0.443137, 0, 0.309804, 1)
-position = Vector2(335, 67)
-texture = ExtResource("3_ocn0r")
-script = ExtResource("2_8lajx")
-type = 8
-
-[node name="Sprite2D6" type="Sprite2D" parent="."]
-modulate = Color(0.443137, 0, 0.309804, 1)
-position = Vector2(465, 67)
-texture = ExtResource("3_ocn0r")
-script = ExtResource("2_8lajx")
-type = 2
-
-[node name="Sprite2D7" type="Sprite2D" parent="."]
-modulate = Color(0.443137, 0, 0.309804, 1)
-position = Vector2(597, 67)
-texture = ExtResource("3_ocn0r")
-script = ExtResource("2_8lajx")
-type = 3
-
-[node name="Sprite2D8" type="Sprite2D" parent="."]
-modulate = Color(0.443137, 0, 0.309804, 1)
-position = Vector2(729, 67)
-texture = ExtResource("3_ocn0r")
-script = ExtResource("2_8lajx")
-type = 2
-
-[node name="Sprite2D9" type="Sprite2D" parent="."]
-modulate = Color(0.443137, 0, 0.309804, 1)
-position = Vector2(858, 67)
-texture = ExtResource("3_ocn0r")
-script = ExtResource("2_8lajx")
-type = 10
-
-[node name="Sprite2D10" type="Sprite2D" parent="."]
-modulate = Color(0.443137, 0, 0.309804, 1)
-position = Vector2(858, 197)
-texture = ExtResource("3_ocn0r")
-script = ExtResource("2_8lajx")
-type = 2
-
-[node name="Sprite2D11" type="Sprite2D" parent="."]
-modulate = Color(0.443137, 0, 0.309804, 1)
-position = Vector2(858, 328)
-texture = ExtResource("3_ocn0r")
-script = ExtResource("2_8lajx")
-type = 5
-
-[node name="Sprite2D12" type="Sprite2D" parent="."]
-modulate = Color(0.443137, 0, 0.309804, 1)
-position = Vector2(858, 455)
-texture = ExtResource("3_ocn0r")
-script = ExtResource("2_8lajx")
-type = 2
-
-[node name="Sprite2D13" type="Sprite2D" parent="."]
-modulate = Color(0.443137, 0, 0.309804, 1)
-position = Vector2(858, 571)
-texture = ExtResource("3_ocn0r")
-script = ExtResource("2_8lajx")
-type = 9
-
-[node name="Sprite2D14" type="Sprite2D" parent="."]
-modulate = Color(0.443137, 0, 0.309804, 1)
-position = Vector2(735, 571)
-texture = ExtResource("3_ocn0r")
-script = ExtResource("2_8lajx")
-type = 2
-
-[node name="Sprite2D15" type="Sprite2D" parent="."]
-modulate = Color(0.443137, 0, 0.309804, 1)
-position = Vector2(609, 571)
-texture = ExtResource("3_ocn0r")
-script = ExtResource("2_8lajx")
-type = 7
-
-[node name="Sprite2D16" type="Sprite2D" parent="."]
-modulate = Color(0.443137, 0, 0.309804, 1)
-position = Vector2(475, 571)
-texture = ExtResource("3_ocn0r")
-script = ExtResource("2_8lajx")
-type = 2
+[node name="DebugMode" type="Label" parent="DebugUI"]
+unique_name_in_owner = true
+offset_right = 40.0
+offset_bottom = 23.0
+text = "WaitingForGodot"
 
 [node name="Start" type="Button" parent="."]
 offset_left = 71.0
@@ -167,7 +66,8 @@ offset_right = 180.0
 offset_bottom = 382.0
 text = "BID"
 
-[node name="LineEdit" type="LineEdit" parent="GameUI/Bid"]
+[node name="BidInput" type="LineEdit" parent="GameUI/Bid"]
+unique_name_in_owner = true
 layout_mode = 0
 offset_left = 106.0
 offset_right = 174.563
@@ -254,3 +154,149 @@ offset_top = 40.0
 offset_right = 106.0
 offset_bottom = 71.0
 text = "PASS"
+
+[node name="Squares" type="Node2D" parent="."]
+
+[node name="Sprite2D" type="Sprite2D" parent="Squares"]
+modulate = Color(0.443137, 0, 0.309804, 1)
+position = Vector2(335, 568)
+texture = ExtResource("3_ocn0r")
+script = ExtResource("2_8lajx")
+type = 1
+
+[node name="Sprite2D2" type="Sprite2D" parent="Squares"]
+modulate = Color(0.443137, 0, 0.309804, 1)
+position = Vector2(335, 438)
+texture = ExtResource("3_ocn0r")
+script = ExtResource("2_8lajx")
+type = 2
+
+[node name="Sprite2D3" type="Sprite2D" parent="Squares"]
+modulate = Color(0.443137, 0, 0.309804, 1)
+position = Vector2(335, 310)
+texture = ExtResource("3_ocn0r")
+script = ExtResource("2_8lajx")
+type = 4
+
+[node name="Sprite2D4" type="Sprite2D" parent="Squares"]
+modulate = Color(0.443137, 0, 0.309804, 1)
+position = Vector2(335, 189)
+texture = ExtResource("3_ocn0r")
+script = ExtResource("2_8lajx")
+type = 2
+
+[node name="Sprite2D5" type="Sprite2D" parent="Squares"]
+modulate = Color(0.443137, 0, 0.309804, 1)
+position = Vector2(335, 67)
+texture = ExtResource("3_ocn0r")
+script = ExtResource("2_8lajx")
+type = 8
+
+[node name="Sprite2D6" type="Sprite2D" parent="Squares"]
+modulate = Color(0.443137, 0, 0.309804, 1)
+position = Vector2(465, 67)
+texture = ExtResource("3_ocn0r")
+script = ExtResource("2_8lajx")
+type = 2
+
+[node name="Sprite2D7" type="Sprite2D" parent="Squares"]
+modulate = Color(0.443137, 0, 0.309804, 1)
+position = Vector2(597, 67)
+texture = ExtResource("3_ocn0r")
+script = ExtResource("2_8lajx")
+type = 3
+
+[node name="Sprite2D8" type="Sprite2D" parent="Squares"]
+modulate = Color(0.443137, 0, 0.309804, 1)
+position = Vector2(729, 67)
+texture = ExtResource("3_ocn0r")
+script = ExtResource("2_8lajx")
+type = 2
+
+[node name="Sprite2D9" type="Sprite2D" parent="Squares"]
+modulate = Color(0.443137, 0, 0.309804, 1)
+position = Vector2(858, 67)
+texture = ExtResource("3_ocn0r")
+script = ExtResource("2_8lajx")
+type = 10
+
+[node name="Sprite2D10" type="Sprite2D" parent="Squares"]
+modulate = Color(0.443137, 0, 0.309804, 1)
+position = Vector2(858, 197)
+texture = ExtResource("3_ocn0r")
+script = ExtResource("2_8lajx")
+type = 2
+
+[node name="Sprite2D11" type="Sprite2D" parent="Squares"]
+modulate = Color(0.443137, 0, 0.309804, 1)
+position = Vector2(858, 328)
+texture = ExtResource("3_ocn0r")
+script = ExtResource("2_8lajx")
+type = 5
+
+[node name="Sprite2D12" type="Sprite2D" parent="Squares"]
+modulate = Color(0.443137, 0, 0.309804, 1)
+position = Vector2(858, 455)
+texture = ExtResource("3_ocn0r")
+script = ExtResource("2_8lajx")
+type = 2
+
+[node name="Sprite2D13" type="Sprite2D" parent="Squares"]
+modulate = Color(0.443137, 0, 0.309804, 1)
+position = Vector2(858, 571)
+texture = ExtResource("3_ocn0r")
+script = ExtResource("2_8lajx")
+type = 9
+
+[node name="Sprite2D14" type="Sprite2D" parent="Squares"]
+modulate = Color(0.443137, 0, 0.309804, 1)
+position = Vector2(735, 571)
+texture = ExtResource("3_ocn0r")
+script = ExtResource("2_8lajx")
+type = 2
+
+[node name="Sprite2D15" type="Sprite2D" parent="Squares"]
+modulate = Color(0.443137, 0, 0.309804, 1)
+position = Vector2(609, 571)
+texture = ExtResource("3_ocn0r")
+script = ExtResource("2_8lajx")
+type = 7
+
+[node name="Sprite2D16" type="Sprite2D" parent="Squares"]
+modulate = Color(0.443137, 0, 0.309804, 1)
+position = Vector2(475, 571)
+texture = ExtResource("3_ocn0r")
+script = ExtResource("2_8lajx")
+type = 2
+
+[node name="AuctionUI" type="Node2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(494, 246)
+
+[node name="Background" type="Panel" parent="AuctionUI"]
+offset_right = 200.0
+offset_bottom = 100.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ocn0r")
+
+[node name="PropertyTitle" type="Label" parent="AuctionUI"]
+offset_right = 40.0
+offset_bottom = 23.0
+text = "Property: Boardwalk"
+
+[node name="StartPrice" type="Label" parent="AuctionUI"]
+offset_top = 23.0
+offset_right = 126.0
+offset_bottom = 46.0
+text = "Start Price: $100"
+
+[node name="HighBid" type="Label" parent="AuctionUI"]
+offset_top = 50.0
+offset_right = 110.0
+offset_bottom = 73.0
+text = "High Bid: $100"
+
+[node name="HighBidders" type="Label" parent="AuctionUI"]
+offset_top = 73.0
+offset_right = 75.0
+offset_bottom = 96.0
+text = "High Bidder: Jon, Jacob"
