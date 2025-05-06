@@ -172,10 +172,13 @@ func simulate_game(delta: float) -> void:
 			if turn_timer < 0:
 				end_turn()
 		Mode.Bidding:
-			bid_timer -= delta
-			bid_clock.text = str(floor(bid_timer))
-			if bid_timer <= 0:
-				pass_bid()
+			var bidder = bidders[bidder_index]
+			# only local
+			if bidder.user == current_player.user:
+				bid_timer -= delta
+				bid_clock.text = str(floor(bid_timer))
+				if bid_timer <= 0:
+					pass_bid_pressed()
 				
 		Mode.WaitingForEndTurn:
 			# player could build a house now or something
@@ -258,6 +261,7 @@ func next_turn() -> void:
 	roll_butt.text = "ROLL"
 	bid_butt.disabled = true
 	pass_bid_butt.disabled = true
+	end_turn_butt.disabled = true
 	turn_timer = time_per_turn
 	print("now it's %s's turn!" % current_player.nickname)
 
@@ -265,8 +269,8 @@ func update_money(p: Player) -> void:
 	if p == current_player:
 		current_player_money.text = "MONEY: $%s" % str(current_player.money)
 	else:
-		push_warning("how do we update non current player money?")
-
+		#TODO
+		pass
 
 func roll_dice() -> void:
 	if paused or not game_started:
@@ -288,6 +292,8 @@ func process_roll(p : Player, die0 : int, die1 : int) -> void:
 		else:
 			#TODO
 			pass
+			
+	roll_butt.text = "SKIP"
 	var distance = die0 + die1
 	var square_index = p.square.num + distance
 	if square_index >= squares.size():
@@ -317,7 +323,10 @@ func place_player_token(p : Player, square : Square) -> void:
 			break
 			
 func pass_go() -> void:
-	print("%s labored on Mother Earth, gained $%d" % [current_player.nickname, labor_on_mother_earth])
+	print("%s labored on Mother Earth. Cash holdings: $%d(+$%d)" % [
+			current_player.nickname, 
+			current_player.money, 
+			labor_on_mother_earth])
 	current_player.money += labor_on_mother_earth
 	update_money(current_player)
 	
@@ -328,9 +337,11 @@ func charge_rent(tenant: Player, square: Square) -> void:
 		Square.Type.Property:
 			rent = square.base_price + square.houses * square.house_rent
 		Square.Type.Utility:
-			push_warning("utility rent?")
+			#TODO
+			pass
 		Square.Type.Railroad:
-			push_warning("railroad rent?")
+			#TODO
+			pass
 		
 	print("pay rent!: $%d" % rent)
 	if tenant.money >= rent:
@@ -338,12 +349,14 @@ func charge_rent(tenant: Player, square: Square) -> void:
 		square.lord.money += rent
 		update_money(tenant)
 		update_money(square.lord)
+		mode = Mode.WaitingForEndTurn
 	else:
-		mode = Mode.PayingDebts
+		if tenant.is_ai:
+			pass
+			# TODO bankruptcy!
 		
 func start_auction(for_sale : Square) -> void:
 	print("start bidding for %s" % for_sale.title)
-	mode = Mode.Bidding
 	bidders = players.duplicate(true)
 	bidder_index = bidders.find(current_player) - 1
 	top_bid = for_sale.base_price
@@ -371,7 +384,7 @@ func conclude_auction() -> void:
 		winner = top_bidders[0]
 	winner.properties.append(property)
 	property.lord = winner
-	print("%s won auction with bid $%s. now owns %s." % [
+	print("%s won auction with bid $%s, new lord of %s." % [
 		current_player.nickname,
 		str(top_bid),
 		current_player.square.title
@@ -385,6 +398,7 @@ func conclude_auction() -> void:
 	bid_clock.text = ""
 	auction_ui.visible = false
 	mode = Mode.WaitingForEndTurn
+	end_turn_butt.disabled = false
 	
 func pass_bid() -> void:
 	bidders.remove_at(bidder_index)
@@ -405,7 +419,7 @@ func bid_submitted() -> void:
 			if amount >= top_bid:
 				bid(current_player, amount)
 		else:
-			push_warning("invalid bid amount: {bid_input.text}")
+			push_warning("invalid bid amount: " + bid_input.text)
 	else:
 		print("not your turn!")
 
@@ -416,18 +430,19 @@ func noncurrent_local_player_pressed_bid() -> void:
 		if amount >= top_bid and amount >= bidder.money:
 			bid(bidder, amount)
 	else:
-		push_warning("invalid bid amount: {bid_input.text}")
+		push_warning("invalid bid amount: " + noncurrent_bid_input.text)
 		
 func bid(p: Player, amount: int) -> void:
 	if amount < top_bid:
 		print("bid is less than top bid")
-	elif amount == top_bid:
+	elif amount == top_bid and top_bidders.size() > 0:
 		print("how do we handle equal top bids? i forget")
 	else:
 		top_bid = amount
+		top_bidders = [p]
 		auction_high_bid.text = "High Bid: " + str(top_bid)
 		auction_bidders.text = "High Bidder: " + p.nickname 
-		print("%s bid %d" % [p.nickname, amount])
+		print("%s bid $%d" % [p.nickname, amount])
 		next_bidder()
 		
 func next_bidder() -> void:
@@ -435,6 +450,7 @@ func next_bidder() -> void:
 	noncurrent_ui.visible = false
 	var bidder: Player = players[bidder_index] 
 	if bidder.is_ai:
+		print("next bidder is ai:" + bidder.nickname)
 		if bidder.money > top_bid + min_bid_increment:
 			# let's say 50/50 they bid
 			if randf() > .5:
@@ -442,13 +458,16 @@ func next_bidder() -> void:
 			else:
 				pass_bid()
 	elif bidder == current_player:
+		print("next bidder is current_player:" + bidder.nickname)
 		bid_butt.disabled = false
 		pass_bid_butt.disabled = false
 	elif bidder.user == current_player.user:
+		print("next bidder is local player:" + bidder.nickname)
 		noncurrent_ui.visible = true
 		bid_butt.disabled = true
 		pass_bid_butt.disabled = true
 	else:
+		print("next bidder is network player:" + bidder.nickname)
 		pass
 		
 	bid_timer = time_per_bid
@@ -456,72 +475,83 @@ func next_bidder() -> void:
 	
 func process_square(p : Player, _came_from : Square, landed_on : Square) -> void:
 	roll_butt.disabled = true
-	mode = Mode.WaitingForEndTurn
+	roll_butt.text = "ROLL"
 	p.square = landed_on
 	print("%s is now on square_%d: %s" % [p.nickname, landed_on.num, landed_on.title])
 	
 	# track this, in case they unpass Go (see rules)
 	var retreated = false
 	
+	mode = Mode.WaitingForEndTurn
 	match landed_on.type:
-		
 		Square.Type.Property:
 			if landed_on.lord == null:
+				mode = Mode.Bidding
 				start_auction(landed_on)
 			elif landed_on.lord == current_player:
 				print("nothing happens, since %s owns %s" % [current_player.nickname, landed_on.title])
 			else:
+				mode = Mode.PayingDebts
 				charge_rent(current_player, landed_on)
 		
 		Square.Type.Utility:
 			if landed_on.lord == null:
+				mode = Mode.Bidding
 				start_auction(landed_on)
 			elif landed_on.lord == current_player:
 				print("nothing happens, since %s owns %s" % [current_player.nickname, landed_on.title])
 			else:
-				push_warning("calculate Utility rent")
+				mode = Mode.PayingDebts
 				charge_rent(current_player, landed_on)
 				
 		Square.Type.Railroad:
 			if landed_on.lord == null:
+				mode = Mode.Bidding
 				start_auction(landed_on)
 			elif landed_on.lord == current_player:
 				print("nothing happens, since %s owns %s" % [current_player.nickname, landed_on.title])
 			else:
-				push_warning("calculate Railroad rent")
+				mode = Mode.PayingDebts
 				charge_rent(current_player, landed_on)
 				
-		Square.Type.Chance:
-			mode = Mode.ReadingCard
-		Square.Type.CommunityChest:
-			mode = Mode.ReadingCard
-		Square.Type.Luxuries:
-			mode = Mode.ReadingCard
-		Square.Type.Jail:
-			#TODO
-			pass
-		Square.Type.BluebloodsEstate:
-			mode = Mode.JailingPlayer
-		Square.Type.CollegeOrFreeLand:
-			#TODO
-			pass			
+		#Square.Type.Chance:
+			#mode = Mode.ReadingCard
+		#Square.Type.CommunityChest:
+			#mode = Mode.ReadingCard
+		#Square.Type.Luxuries:
+			#mode = Mode.ReadingCard
+		#Square.Type.Jail:
+		#Square.Type.BluebloodsEstate:
+			#mode = Mode.JailingPlayer
+		#Square.Type.CollegeOrFreeLand:
 		Square.Type.Go:
 			pass
 		Square.Type.Undefined:
 			push_warning("undefined square!")
 			pass
-	
+			
+	if mode == Mode.WaitingForEndTurn:
+		end_turn_butt.disabled = false
+		
 	for i in current_laps:
 		if not retreated:
 			pass_go()
 			
 func pass_bid_pressed() -> void:
-	pass
+	pass_bid() # pass bid just passes for player at bidder_index, hm
+	
 func build_house() -> void:
+	# need to specify location
+	# then just check for $ and num of houses already built
+	# SINGLETAX in play, then build anywhere i think
 	pass
+	
 func start_trade() -> void:
+	# prompt for $ and properties and target player
+	# trading ui? any time? retract offer? network timing issues
 	pass
 			
 func end_turn() -> void:
 	# TODO close dialog windows or whatever
+	# windows that could be open: other bids, building, trading, reading card?
 	next_turn()

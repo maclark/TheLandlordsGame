@@ -5,7 +5,7 @@ extends Node2D
 
 var num = -1
 @export var type : Type = Type.Undefined
-@export var title : String = "boardwalk"
+@export var title : String = "unknown property"
 @export var base_price : int = 100
 @export var base_rent : int = 10
 @export var house_rent : int = 5
@@ -45,8 +45,15 @@ func _ready() -> void:
 		Type.Chance:
 			modulate = Color(1, 0, 0, 1)
 			title = "Chance"
+		Type.CommunityChest:
+			modulate = Color(1, 1, 0, 1)
+			title = "Community Chest"
 		Type.Luxuries:
 			modulate = Color(0, 1, 0, 1)
 			title = "Luxuries"
-			
-			
+		Type.BluebloodsEstate:
+			title = "Blueblood's Estate"
+		Type.CollegeOrFreeLand:
+			title = "Free Land"
+		Type.Jail:
+			title = "Jail"	
