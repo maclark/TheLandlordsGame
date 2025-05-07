@@ -8,3 +8,4 @@ var token: PlayerToken
 var money: int
 var properties: Array[Square] = []
 var in_jail: bool = false
+var left_game: bool = false

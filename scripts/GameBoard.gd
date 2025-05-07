@@ -95,6 +95,8 @@ func init_board(new_id : int, new_lord : Landlord, new_host : User) -> void:
 	add_ai_button.pressed.connect(add_ai)
 	var temp_skip_button: Button = $Skip
 	temp_skip_button.pressed.connect(skip_input)
+	var leave_board_button: Button = $LeaveBoard
+	leave_board_button.pressed.connect(leave_board)
 	
 	# connect buttons
 	roll_butt.pressed.connect(roll_dice)
@@ -129,7 +131,11 @@ func start_game() -> void:
 	print("Go forth and labor upon Mother Earth!")
 	current_player_index = -1
 	next_turn()
-		
+
+func leave_board(p: Player) -> void:
+	# do we just mark player as having left and then on their turn they quit?
+	p.left_game = true
+
 func _process(delta: float) -> void:
 	mode_lab.text = str(Mode.keys()[mode]) # DEBUG
 	if game_started:
@@ -238,6 +244,12 @@ func add_player(user : User, is_ai : bool) -> void:
 	add_child(label)
 	player_labels.append(label)
 	
+func redraw_player_labels() -> void:
+	var y_offset = 10.0 
+	for lab in player_labels:
+		y_offset += player_label_spacing
+		lab.position = Vector2(get_viewport().size.x - 200.0, y_offset)
+	
 func remove_player(nickname : String) -> void:
 	var index = -1
 	for i in players.size():
@@ -252,18 +264,33 @@ func remove_player(nickname : String) -> void:
 		print("couldn't find player with name %s " % name)
 		
 func next_turn() -> void:
-	mode = Mode.Rolling
 	current_player_index = (current_player_index + 1) % players.size()
 	current_player = players[current_player_index]
-	current_player_label.text = current_player.nickname
-	update_money(current_player)
-	roll_butt.disabled = false
-	roll_butt.text = "ROLL"
-	bid_butt.disabled = true
-	pass_bid_butt.disabled = true
-	end_turn_butt.disabled = true
-	turn_timer = time_per_turn
-	print("now it's %s's turn!" % current_player.nickname)
+	if current_player.left_game:
+		players.remove_at(current_player_index)
+		current_player_index -= 1
+		redraw_player_labels()
+		# check for any local players
+		var stay_on_board = false
+		for p in players:
+			if p.user.local:
+				stay_on_board = true
+		if stay_on_board:
+			next_turn()
+		elif current_player.user.local: 
+			current_player.user.board = null
+			
+	else:
+		current_player_label.text = current_player.nickname
+		update_money(current_player)
+		roll_butt.disabled = false
+		roll_butt.text = "ROLL"
+		bid_butt.disabled = true
+		pass_bid_butt.disabled = true
+		end_turn_butt.disabled = true
+		turn_timer = time_per_turn
+		mode = Mode.Rolling
+		print("now it's %s's turn!" % current_player.nickname)
 
 func update_money(p: Player) -> void:
 	if p == current_player:

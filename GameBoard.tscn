@@ -40,6 +40,13 @@ offset_right = 180.0
 offset_bottom = 156.0
 text = "ADD AI"
 
+[node name="LeaveBoard" type="Button" parent="."]
+offset_left = 952.0
+offset_top = 566.0
+offset_right = 1067.0
+offset_bottom = 597.0
+text = "LEAVE BOARD"
+
 [node name="GameUI" type="Node2D" parent="."]
 
 [node name="CurrentPlayerLabel" type="Label" parent="GameUI"]

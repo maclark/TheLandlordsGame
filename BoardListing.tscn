@@ -1,0 +1,39 @@
+[gd_scene load_steps=2 format=3 uid="uid://dunl5m0nq00sc"]
+
+[ext_resource type="Script" uid="uid://bxehaysjux55v" path="res://scripts/BoardListing.gd" id="1_8pj8l"]
+
+[node name="BoardListing" type="Node2D"]
+script = ExtResource("1_8pj8l")
+
+[node name="BoardId" type="Label" parent="."]
+offset_right = 88.0
+offset_bottom = 23.0
+text = "BOARD 999"
+
+[node name="Host" type="Label" parent="."]
+offset_left = 18.0
+offset_top = 25.0
+offset_right = 59.0
+offset_bottom = 48.0
+text = "Host:"
+
+[node name="PlayerCount" type="Label" parent="."]
+offset_left = 18.0
+offset_top = 48.0
+offset_right = 79.0
+offset_bottom = 71.0
+text = "Players:"
+
+[node name="Join" type="Button" parent="."]
+offset_left = 18.0
+offset_top = 71.0
+offset_right = 61.0
+offset_bottom = 102.0
+text = "JOIN"
+
+[node name="Leave" type="Button" parent="."]
+offset_left = 79.0
+offset_top = 71.0
+offset_right = 122.0
+offset_bottom = 102.0
+text = "LEAVE"
