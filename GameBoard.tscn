@@ -154,7 +154,8 @@ offset_right = 106.0
 offset_bottom = 31.0
 text = "BID"
 
-[node name="LineEdit" type="LineEdit" parent="GameUI/LocalNonCurrentPlayerBidGroup/Bid2"]
+[node name="NonCurrentBidInput" type="LineEdit" parent="GameUI/LocalNonCurrentPlayerBidGroup/Bid2"]
+unique_name_in_owner = true
 layout_mode = 0
 offset_left = 106.0
 offset_right = 174.563

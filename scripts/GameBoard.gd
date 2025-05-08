@@ -19,6 +19,7 @@ var paused:					bool = false
 var game_started:			bool = false
 
 @onready var game_ui: 				Node2D = $GameUI
+@onready var start_butt: 			Button = get_node("%Start")
 @onready var noncurrent_ui:			Node2D = get_node("%LocalNonCurrentPlayerBidGroup")
 @onready var current_player_label:	Label = get_node("%CurrentPlayerLabel")
 @onready var turn_clock:			Label = get_node("%TurnClock")
@@ -51,10 +52,10 @@ var bidders: 				Array[Player]
 var bidder_index:			int = 0
 var top_bid:				int = 0
 var min_bid_increment:		int = 50
-var noncurrent_bid_input:	LineEdit = null
 var top_bidders:			Array[Player] = []
 var bid_button:				Label = null
 var bid_timer:				float = 0.0
+@onready var noncurrent_bid_input:	LineEdit = get_node("%NonCurrentBidInput")
 @onready var bid_input:		LineEdit = get_node("%BidInput")
 @onready var bid_clock:		Label = get_node("%BidClock")
 
@@ -89,8 +90,8 @@ func init_board(new_id : int, new_lord : Landlord, new_host : User) -> void:
 	id = new_id
 	lord = new_lord
 	host = new_host 
-	var start_button: Button = get_node("%Start")
-	start_button.pressed.connect(start_game)
+	start_butt.pressed.connect(start_game)
+	
 	var add_ai_button: Button = get_node("%AddAI")
 	add_ai_button.pressed.connect(add_ai)
 	var temp_skip_button: Button = get_node("%Skip")
@@ -109,6 +110,11 @@ func init_board(new_id : int, new_lord : Landlord, new_host : User) -> void:
 	current_player_money = get_node("%MoneyLabel")
 	assert(current_player_money)
 	
+	var noncurrent_bid_butt = noncurrent_ui.get_node("Bid2") as Button
+	noncurrent_bid_butt.pressed.connect(noncurrent_local_player_pressed_bid)
+	var noncurrent_pass_bid_butt = noncurrent_ui.get_node("Pass2")
+	noncurrent_pass_bid_butt.pressed.connect(pass_bid) # i think ok
+	
 	var square_index = 0
 	for c in $Squares.get_children():
 		if c is Square:
@@ -119,8 +125,17 @@ func init_board(new_id : int, new_lord : Landlord, new_host : User) -> void:
 	
 func start_game() -> void:
 	if game_started:
+		if paused:
+			start_butt.text = "PAUSE"
+			paused = false
+			game_ui.visible = true
+		else:
+			start_butt.text = "RESUME"
+			paused = true
+			game_ui.visible = false
 		return
 		
+	start_butt.text = "PAUSE"
 	game_started = true
 	paused = false
 	game_ui.visible = true
@@ -383,8 +398,8 @@ func charge_rent(tenant: Player, square: Square) -> void:
 			#TODO
 			pass
 		
-	print("pay rent!: $%d" % rent)
 	if tenant.money >= rent:
+		print(tenant.nickname + " paid rent $%d(-$%d)" % [tenant.money, rent])
 		tenant.money -= rent
 		square.lord.money += rent
 		update_money(tenant)
@@ -400,6 +415,7 @@ func start_auction(for_sale : Square) -> void:
 	bidders = players.duplicate(true)
 	bidder_index = bidders.find(current_player) - 1
 	top_bid = for_sale.base_price
+	top_bidders = []
 	bid_butt.disabled = false
 	pass_bid_butt.disabled = false
 	auction_ui.visible = true
@@ -439,9 +455,14 @@ func conclude_auction() -> void:
 	auction_ui.visible = false
 	mode = Mode.WaitingForEndTurn
 	end_turn_butt.disabled = false
+	bidders = []
+	top_bidders = []
 	
 func pass_bid() -> void:
+	print(bidders[bidder_index].nickname + " passes")
 	bidders.remove_at(bidder_index)
+	print(str(bidders.size()) + " bidders.size")
+	bidder_index -= 1
 	# how do i handle calling? is that allowed? i forget the rules
 	# but i thought it said something like
 	# if everyone bids the same amount, the current player gets it
@@ -469,6 +490,8 @@ func noncurrent_local_player_pressed_bid() -> void:
 		var amount = int(noncurrent_bid_input.text)
 		if amount >= top_bid and amount >= bidder.money:
 			bid(bidder, amount)
+		else:
+			print("not enough or not high enough $")
 	else:
 		push_warning("invalid bid amount: " + noncurrent_bid_input.text)
 		
@@ -488,21 +511,23 @@ func bid(p: Player, amount: int) -> void:
 func next_bidder() -> void:
 	bidder_index = (bidder_index + 1) % bidders.size()
 	noncurrent_ui.visible = false
-	var bidder: Player = players[bidder_index] 
+	var bidder: Player = bidders[bidder_index] 
 	if bidder.is_ai:
-		print("next bidder is ai:" + bidder.nickname)
+		print("next bidder is ai: " + bidder.nickname)
 		if bidder.money > top_bid + min_bid_increment:
 			# let's say 50/50 they bid
-			if randf() > .5:
+			var roll = randf()
+			print("ai rolled: " + str(roll))
+			if roll > .5:
 				bid(bidder, top_bid + min_bid_increment)
 			else:
 				pass_bid()
 	elif bidder == current_player:
-		print("next bidder is current_player:" + bidder.nickname)
+		print("next bidder is current_player: " + bidder.nickname)
 		bid_butt.disabled = false
 		pass_bid_butt.disabled = false
 	elif bidder.user == current_player.user:
-		print("next bidder is local player:" + bidder.nickname)
+		print("next bidder is local player: " + bidder.nickname)
 		noncurrent_ui.visible = true
 		bid_butt.disabled = true
 		pass_bid_butt.disabled = true

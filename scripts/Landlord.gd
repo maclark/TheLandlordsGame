@@ -36,6 +36,12 @@ func _ready() -> void:
 		if line != "":
 			default_player_names.append(line)
 	file.close()
+	
+	#DEBUG
+	pressed_hosting_button(hosting_button)
+	join_board(board_listings[0].id)
+	join_board(board_listings[0].id)
+	fake_user.board.start_game()
 
 func pressed_hosting_button(butt : Button) -> void:
 	# need to get user from browser somehow here
