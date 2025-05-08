@@ -14,7 +14,7 @@ var board_listings:			Array[BoardListing] = []
 var default_player_names: 	Array[String] = []
 var hosting_button: 		Button = null
 var fake_user: 				User = null
-var board_count: 			int = 0
+var listing_count:			int = 0
 
 # default settings
 const MAX_PLAYERS 				= 99
@@ -26,7 +26,7 @@ const PLAYER_COLORS = [Color.DARK_RED, Color.AQUA, Color.CHARTREUSE, Color.YELLO
 
 func _ready() -> void:
 	fake_user = UserClass.new()
-	hosting_button = $HostingButton
+	hosting_button = get_node("Listings/HostingButton")
 	hosting_button.text = "HOST BOARD"
 	hosting_button.pressed.connect(pressed_hosting_button.bind(hosting_button))
 	
@@ -48,17 +48,17 @@ func pressed_hosting_button(butt : Button) -> void:
 		butt.text = "HOST BOARD"
 
 func draw_board_listings() -> void:
-	var y_offset = 10;
+	var y_offset = 60;
 	for listing in board_listings:
-		listing.position = Vector2(300, y_offset)
-		y_offset += 100.0
+		listing.position = Vector2(30, y_offset)
+		y_offset += 120.0
 		
 func create_board_listing(host: User) -> void:
-	board_count += 1
+	listing_count += 1
 	var listing = BoardListingScene.instantiate() as BoardListing
 	listings.add_child(listing)
 	board_listings.append(listing)
-	listing.init(board_count, host)
+	listing.init(listing_count, host)
 	listing.join_butt.visible = fake_user.board == null
 	listing.leave_butt.visible = false
 	listing.join_butt.pressed.connect(func(): join_board(listing.id))
@@ -67,23 +67,30 @@ func create_board_listing(host: User) -> void:
 	
 func remove_board_listing(id: int) -> void:
 	var listing_index = board_listings.find_custom(func(l): return l.id == id)
-	var listing = board_listings[listing_index]
-	if listing != null:
+	if listing_index >= 0:
+		var listing = board_listings[listing_index]
+		if listing.board:
+			listing.board.queue_free()
 		listing.queue_free()
 		board_listings.remove_at(listing_index)
-	draw_board_listings()
-	
-func hide_board() -> void:
-	listings.visisble = true
-	fake_user.board.visible = false
+		print("removed board listing " + str(id))
+		draw_board_listings()
 	
 func join_board(id: int) -> void:
 	hosting_button.text = "UNHOST BOARD"
 	var listing_index = board_listings.find_custom(func(l): return l.id == id)
 	var listing = board_listings[listing_index]
 	if listing.join_butt.text == "SIT":
-		# TODO NEXT
-		fake_user.board.visible = true
+		if not listing.board:
+			var board = GameBoardScene.instantiate() as GameBoard
+			add_child(board)
+			board.init_board(listing.id, self, fake_user)
+			board.add_player(fake_user, false)
+			board.add_ai()
+			listing.board = board
+			print("sat at board_%s" % board.id)	
+		fake_user.board = listing.board
+		listing.board.sit()
 		listings.visible = false
 	else:
 		fake_user.listing = listing
@@ -93,37 +100,22 @@ func join_board(id: int) -> void:
 		for l in board_listings:
 			if l != listing:
 				l.join_butt.visible = false
+
+func view_listings() -> void:
+	listings.visible = true
+	draw_board_listings()
+	
 	
 func leave_board(id: int) -> void:
 	hosting_button.text = "HOST BOARD"
 	fake_user.listing = null
 	var listing_index = board_listings.find_custom(func(l): return l.id == id)
 	var listing = board_listings[listing_index]
-	listing.set_player_count(listing.player_count - 1)
-	listing.join_butt.text = "JOIN"
-	listing.leave_butt.visible = false
+	if listing.player_count == 1:
+		remove_board_listing(id)
+	else:
+		listing.set_player_count(listing.player_count - 1)
+		listing.join_butt.text = "JOIN"
+		listing.leave_butt.visible = false
 	for l in board_listings:
 		l.join_butt.visible = true
-
-func host_board(user : User) -> void:
-	var board = GameBoardScene.instantiate() as GameBoard
-	add_child(board)
-	board_count += 1
-	board.init_board(board_count, self, user)
-	board.add_player(user, false)
-	board.add_ai()
-	print("hosting board_%s" % board.id)
-	# TODO make buttons for adding/remo players
-
-func unhost_board(user : User) -> void:
-	var board = user.board
-	if not board:
-		push_warning("%s doesn't have a board to unhost!" % user.nickname)
-		return
-	if board.host != user:
-		push_warning("%s isn't the host! not allowed!" % user.nickname)
-		return
-	print("unhosting board_%s" % board.id)
-	for p in board.players:
-		p.user.board = null
-	board.queue_free()

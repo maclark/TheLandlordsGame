@@ -5,11 +5,11 @@
 [node name="Landlord" type="Node2D"]
 script = ExtResource("1_wylpy")
 
-[node name="HostingButton" type="Button" parent="."]
+[node name="Listings" type="Node2D" parent="."]
+
+[node name="HostingButton" type="Button" parent="Listings"]
 offset_left = 9.0
 offset_top = 11.0
 offset_right = 110.0
 offset_bottom = 42.0
 text = "HOST GAME"
-
-[node name="Listings" type="Node2D" parent="."]

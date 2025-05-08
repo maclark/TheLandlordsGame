@@ -19,33 +19,39 @@ offset_right = 40.0
 offset_bottom = 23.0
 text = "WaitingForGodot"
 
-[node name="Start" type="Button" parent="."]
+[node name="BoardMenu" type="Node2D" parent="."]
+
+[node name="Start" type="Button" parent="BoardMenu"]
+unique_name_in_owner = true
 offset_left = 71.0
 offset_top = 88.0
 offset_right = 177.0
 offset_bottom = 119.0
 text = "START GAME"
 
-[node name="Skip" type="Button" parent="."]
+[node name="Skip" type="Button" parent="BoardMenu"]
+unique_name_in_owner = true
 offset_left = 74.0
 offset_top = 169.0
 offset_right = 180.0
 offset_bottom = 200.0
 text = "SKIP (debug)"
 
-[node name="AddAI" type="Button" parent="."]
+[node name="AddAI" type="Button" parent="BoardMenu"]
+unique_name_in_owner = true
 offset_left = 74.0
 offset_top = 125.0
 offset_right = 180.0
 offset_bottom = 156.0
 text = "ADD AI"
 
-[node name="LeaveBoard" type="Button" parent="."]
+[node name="StandUp" type="Button" parent="BoardMenu"]
+unique_name_in_owner = true
 offset_left = 952.0
 offset_top = 566.0
 offset_right = 1067.0
 offset_bottom = 597.0
-text = "LEAVE BOARD"
+text = "STAND UP"
 
 [node name="GameUI" type="Node2D" parent="."]
 

@@ -89,14 +89,14 @@ func init_board(new_id : int, new_lord : Landlord, new_host : User) -> void:
 	id = new_id
 	lord = new_lord
 	host = new_host 
-	var start_button: Button = $Start
+	var start_button: Button = get_node("%Start")
 	start_button.pressed.connect(start_game)
-	var add_ai_button: Button = $AddAI
+	var add_ai_button: Button = get_node("%AddAI")
 	add_ai_button.pressed.connect(add_ai)
-	var temp_skip_button: Button = $Skip
+	var temp_skip_button: Button = get_node("%Skip")
 	temp_skip_button.pressed.connect(skip_input)
-	var leave_board_button: Button = $LeaveBoard
-	leave_board_button.pressed.connect(leave_board)
+	var stand_up_button: Button = get_node("%StandUp")
+	stand_up_button.pressed.connect(stand_up)
 	
 	# connect buttons
 	roll_butt.pressed.connect(roll_dice)
@@ -113,12 +113,14 @@ func init_board(new_id : int, new_lord : Landlord, new_host : User) -> void:
 	for c in $Squares.get_children():
 		if c is Square:
 			c.num = square_index
-			print("square found, num is %d" % c.num)
 			square_index += 1
 			squares.append(c as Square)
 	# TODO could probably load the last settings this user used
 	
 func start_game() -> void:
+	if game_started:
+		return
+		
 	game_started = true
 	paused = false
 	game_ui.visible = true
@@ -131,10 +133,21 @@ func start_game() -> void:
 	print("Go forth and labor upon Mother Earth!")
 	current_player_index = -1
 	next_turn()
-
-func leave_board(p: Player) -> void:
+	
+func player_left(_p: Player) -> void:
 	# do we just mark player as having left and then on their turn they quit?
-	p.left_game = true
+	pass
+
+func stand_up() -> void:
+	game_ui.visible = false
+	$BoardMenu.visible = false
+	lord.view_listings()
+	
+func sit() -> void:
+	visible = true
+	if game_started:
+		game_ui.visible = true
+	$BoardMenu.visible = true
 
 func _process(delta: float) -> void:
 	mode_lab.text = str(Mode.keys()[mode]) # DEBUG
