@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3 uid="uid://cgxabbrci58n6"]
+
+[ext_resource type="Texture2D" uid="uid://d30nmjmahfmd" path="res://icon.svg" id="1_rk711"]
+[ext_resource type="Script" uid="uid://dnvgakkgay4fc" path="res://scripts/Square.gd" id="2_wkptf"]
+
+[node name="NormalSquare" type="Sprite2D"]
+modulate = Color(0.443137, 0, 0.309804, 1)
+scale = Vector2(0.33, 1)
+texture = ExtResource("1_rk711")
+script = ExtResource("2_wkptf")
+type = 2

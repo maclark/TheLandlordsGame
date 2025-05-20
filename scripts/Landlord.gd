@@ -7,6 +7,8 @@ extends Node2D
 
 var BoardListingScene 		= preload("res://BoardListing.tscn")
 var GameBoardScene 			= preload("res://GameBoard.tscn")
+var NormalSquareScene 		= preload("res://NormalSquare.tscn")
+var CornerSquareScene		= preload("res://CornerSquare.tscn")
 var PlayerTokenScene 		= preload("res://PlayerToken.tscn")
 var PlayerClass 			= preload("res://scripts/Player.gd")
 var UserClass 				= preload("res://scripts/User.gd")

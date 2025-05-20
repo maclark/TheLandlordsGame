@@ -115,13 +115,108 @@ func init_board(new_id : int, new_lord : Landlord, new_host : User) -> void:
 	var noncurrent_pass_bid_butt = noncurrent_ui.get_node("Pass2")
 	noncurrent_pass_bid_butt.pressed.connect(pass_bid) # i think ok
 	
-	var square_index = 0
-	for c in $Squares.get_children():
-		if c is Square:
-			c.num = square_index
-			square_index += 1
-			squares.append(c as Square)
+	# make board squares
+	make_square(Square.Type.Go, "MOTHER EARTH", 0, 0)
+	make_square(Square.Type.Property, "WAYBACK", 25, 0)
+	make_square(Square.Type.Taxes, "FUEL", 10, 0)
+	make_square(Square.Type.Property, "LONELY LANE", 25, 2)
+	make_square(Square.Type.GamePreserves, "GAME PRESERVES", 0, 0)
+	make_square(Square.Type.Railroad, "ROYAL RUSHER R.R.", 50, 5)
+	make_square(Square.Type.Property, "THE PIKE", 25, 4)
+	make_square(Square.Type.Property, "THE FARM", 25, 4)
+	make_square(Square.Type.Speculation, "SPECULATION", 50, 10)
+	make_square(Square.Type.Property, "RUBEVILLE", 25, 6)
+	
+	# next side
+	make_square(Square.Type.JailShelter, "JAIL", 10, 0)
+	make_square(Square.Type.Property, "BOOMTOWN", 50, 6)
+	make_square(Square.Type.Property, "GOAT ALLEY", 50, 8)
+	make_square(Square.Type.Utility, "SOAKUM LIGHTING SYSTEM", 50, 5)
+	make_square(Square.Type.Property, "BEGGARMAN'S COURT", 50, 8)
+	make_square(Square.Type.Railroad, "SHOOTING STAR R.R.", 50, 5)
+	make_square(Square.Type.Property, "RICKETY ROW", 50, 10)
+	make_square(Square.Type.Taxes, "FOOD", 10, 0)
+	make_square(Square.Type.Property, "MARKET PLACE", 50, 10)
+	make_square(Square.Type.Property, "COTTAGE TERRACE", 50, 12)
+	
+	#next side
+	make_square(Square.Type.PoorhouseCentralPark, "POORHOUSE", 0, 0)
+	make_square(Square.Type.Property, "EASY STREET", 75, 12)
+	make_square(Square.Type.Chance, "CHANCE", 0, 0)
+	make_square(Square.Type.Property, "GEORGE STREET", 75, 14)
+	make_square(Square.Type.Property, "MAGUIRE FLATS", 75, 14)
+	make_square(Square.Type.Railroad, "GEE WHIZ R.R.", 50, 5)
+	make_square(Square.Type.Property, "FAIRHOPE AVENUE", 75, 16)
+	make_square(Square.Type.Utility, "SLAMBANG TROLLEY", 50, 5)
+	make_square(Square.Type.Property, "JOHNSON CIRCLE", 75, 16)
+	make_square(Square.Type.Property, "THE BOWERY", 75, 18)
+	
+	#next side
+	make_square(Square.Type.BluebloodsEstate, "BLUEBLOOD", 0, 0)
+	make_square(Square.Type.Property, "BROADWAY", 100, 18)
+	make_square(Square.Type.Taxes, "CLOTHING", 10, 0)
+	make_square(Square.Type.Property, "MADISON SQUARE", 100, 20)
+	make_square(Square.Type.Property, "FIFTH AVENUE", 100, 20)
+	make_square(Square.Type.Railroad, "P.D.Q. R.R.", 50, 5)
+	make_square(Square.Type.Property, "GRAND BOULEVARD", 100, 22)
+	make_square(Square.Type.Chance, "CHANCE", 0, 0)
+	make_square(Square.Type.Property, "WALL STREET", 100, 22)
+	make_square(Square.Type.Luxury, "LUXURY", 75, 0)
+	
 	# TODO could probably load the last settings this user used
+	
+# landlord's game has Go in bot right
+func make_square(type: Square.Type, title: String, sale_price: int, land_rent: int) -> void:
+	var square_count = squares.size()
+	var square: Square = null
+	var is_corner = false
+	var square_rotation: float
+	var square_width = 43
+	var half_corner = 32
+	var corner_width = 64
+	var pos = Vector2(0, 0)
+	var bot_right = Vector2(850, 570)
+	var bot_left = bot_right + Vector2(-10 * square_width - corner_width, 0)
+	var top_left = bot_left + Vector2(0, -10 * square_width - corner_width)
+	var top_right = top_left + Vector2(10 * square_width + corner_width, 0)
+	if square_count == 0: # MOTHER EARTH
+		is_corner = true
+		pos = bot_right
+	elif square_count < 10:
+		pos = bot_right + Vector2(-square_count * square_width - half_corner, 0)
+	elif square_count == 10: # JAIL
+		is_corner = true
+		pos = bot_left
+	elif square_count < 20:
+		square_rotation = PI / 2.0
+		pos = bot_left + Vector2(0, -square_width * (square_count - 10) - half_corner)	
+	elif square_count == 20: # POORHOUSE/CENTRAL PARK FREE
+		is_corner = true
+		pos = top_left
+	elif square_count < 30:
+		square_rotation = PI
+		pos = top_left + Vector2(square_width * (square_count - 20) + half_corner, 0)
+	elif square_count == 30: # BLUEBLOODS
+		is_corner = true
+		pos = top_right
+	elif square_count < 40:
+		square_rotation = 3.0 * PI / 2.0
+		pos = top_right + Vector2(0, square_width * (square_count - 30) + half_corner)
+	else:
+		push_warning("how many squares we making!?")
+	
+	if is_corner:
+		square = lord.CornerSquareScene.instantiate() as Square
+	else:
+		square = lord.NormalSquareScene.instantiate() as Square
+	square.define(square_count, type, title, sale_price, land_rent)
+	$Squares.add_child(square)
+	print("pos: %s" % str(pos))
+	print("rotation: %d" % square_rotation)
+	square.position = pos
+	square.rotation = square_rotation
+	squares.append(square)
+	
 	
 func start_game() -> void:
 	if game_started:
@@ -170,6 +265,11 @@ func _process(delta: float) -> void:
 		if not paused:
 			simulate_game(delta)
 			
+func _input(event):
+	if event is InputEventMouseButton and event.pressed:
+		var mouse_pos = get_viewport().get_mouse_position()
+		print("Mouse position: ", mouse_pos)		
+			
 func simulate_game(delta: float) -> void:
 	match mode:
 		Mode.Moving:
@@ -177,6 +277,7 @@ func simulate_game(delta: float) -> void:
 			while keep_going:
 				var step = delta * move_speed
 				var next_square_index = current_player.square.num + 1
+				print("next_square_index %d" % next_square_index)
 				if next_square_index == squares.size():
 					next_square_index = 0
 				var to_destination = squares[next_square_index].position - current_player.token.position 
@@ -185,6 +286,7 @@ func simulate_game(delta: float) -> void:
 					if next_square_index == 0: # we've reached Go!
 						current_laps += 1
 					current_player.square = squares[next_square_index]
+					print("current_player.square: %s(%d)" % [current_player.square.title, current_player.square.num])
 					if current_player.square == square_going_to:
 						skip_move_animation = false
 						place_player_token(current_player, square_going_to)
@@ -349,11 +451,9 @@ func process_roll(p : Player, die0 : int, die1 : int) -> void:
 			pass
 			
 	roll_butt.text = "SKIP"
-	var distance = die0 + die1
-	var square_index = p.square.num + distance
+	var total_roll = die0 + die1
+	var square_index = p.square.num + total_roll
 	if square_index >= squares.size():
-		# passed GO! collect $200
-		p.money += labor_on_mother_earth
 		square_index -= squares.size()
 		
 	square_going_to = squares[square_index]
@@ -390,7 +490,7 @@ func charge_rent(tenant: Player, square: Square) -> void:
 	var rent = 10
 	match square.type:
 		Square.Type.Property:
-			rent = square.base_price + square.houses * square.house_rent
+			rent = square.sale_price + square.houses * square.house_rent
 		Square.Type.Utility:
 			#TODO
 			pass
@@ -414,13 +514,13 @@ func start_auction(for_sale : Square) -> void:
 	print("start bidding for %s" % for_sale.title)
 	bidders = players.duplicate(true)
 	bidder_index = bidders.find(current_player) - 1
-	top_bid = for_sale.base_price
+	top_bid = for_sale.sale_price
 	top_bidders = []
 	bid_butt.disabled = false
 	pass_bid_butt.disabled = false
 	auction_ui.visible = true
 	auction_prop.text = "Property: " + for_sale.title
-	auction_start_price.text = "Start Price: " + str(for_sale.base_price)
+	auction_start_price.text = "Start Price: " + str(for_sale.sale_price)
 	auction_high_bid.text = "High Bid: --"
 	auction_bidders.text = "High Bidders: --"
 	next_bidder();
@@ -438,17 +538,20 @@ func conclude_auction() -> void:
 		pass
 	else:
 		winner = top_bidders[0]
-	winner.properties.append(property)
-	property.lord = winner
-	print("%s won auction with bid $%s, new lord of %s." % [
-		current_player.nickname,
-		str(top_bid),
-		current_player.square.title
-	])	
-	winner.money -= top_bid
-	update_money(winner)
-	if winner != current_player:
-		charge_rent(current_player, property)
+		
+	if winner:
+		winner.properties.append(property)
+		property.lord = winner
+		print("%s won auction with bid $%s, new lord of %s." % [
+			current_player.nickname,
+			str(top_bid),
+			current_player.square.title
+		])	
+		winner.money -= top_bid
+		update_money(winner)
+		if winner != current_player:
+			charge_rent(current_player, property)
+			
 	bid_butt.disabled = true
 	pass_bid_butt.disabled = true
 	bid_clock.text = ""
@@ -488,7 +591,7 @@ func noncurrent_local_player_pressed_bid() -> void:
 	var bidder: Player = bidders[bidder_index]
 	if noncurrent_bid_input.text.is_valid_int(): 
 		var amount = int(noncurrent_bid_input.text)
-		if amount >= top_bid and amount >= bidder.money:
+		if amount >= top_bid and amount <= bidder.money:
 			bid(bidder, amount)
 		else:
 			print("not enough or not high enough $")
@@ -506,7 +609,10 @@ func bid(p: Player, amount: int) -> void:
 		auction_high_bid.text = "High Bid: " + str(top_bid)
 		auction_bidders.text = "High Bidder: " + p.nickname 
 		print("%s bid $%d" % [p.nickname, amount])
-		next_bidder()
+		if bidders.size() > 1:
+			next_bidder()
+		else: # this was the last person who could have bid
+			conclude_auction()
 		
 func next_bidder() -> void:
 	bidder_index = (bidder_index + 1) % bidders.size()
@@ -579,18 +685,6 @@ func process_square(p : Player, _came_from : Square, landed_on : Square) -> void
 				mode = Mode.PayingDebts
 				charge_rent(current_player, landed_on)
 				
-		#Square.Type.Chance:
-			#mode = Mode.ReadingCard
-		#Square.Type.CommunityChest:
-			#mode = Mode.ReadingCard
-		#Square.Type.Luxuries:
-			#mode = Mode.ReadingCard
-		#Square.Type.Jail:
-		#Square.Type.BluebloodsEstate:
-			#mode = Mode.JailingPlayer
-		#Square.Type.CollegeOrFreeLand:
-		Square.Type.Go:
-			pass
 		Square.Type.Undefined:
 			push_warning("undefined square!")
 			pass

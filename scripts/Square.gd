@@ -6,8 +6,8 @@ extends Node2D
 var num = -1
 @export var type : Type = Type.Undefined
 @export var title : String = "unknown property"
-@export var base_price : int = 100
-@export var base_rent : int = 10
+@export var sale_price : int = 100
+@export var land_rent : int = 10
 @export var house_rent : int = 5
 
 var lord : Player = null
@@ -21,39 +21,31 @@ enum Type {
 	Utility,
 	Railroad,
 	Chance,
-	CommunityChest, # TODO what were they called?
-	Luxuries, 
-	Jail,
+	Luxury,
+	Taxes, 
+	Speculation,
+	GamePreserves,
+	JailShelter,
 	BluebloodsEstate,
-	CollegeOrFreeLand, # free parking
+	PoorhouseCentralPark, # free parking
 }
 
-func _ready() -> void:
+func define(_num: int, _type: Type, _title: String, _sale_price: int, _land_rent: int) -> void:
+	num = _num
+	type = _type
+	title = _title
+	sale_price = _sale_price
+	land_rent = _land_rent
 	match type:
-		Type.Go:
-			#modulate = Color(1, 1, 1, 1)
-			title = "Go"
 		Type.Property:
 			modulate = Color(1, .5, .5, 1)
-			title = "St. James Place"
 		Type.Railroad:
 			modulate = Color(.1, .1, .1, 1)
-			title = "Railroad"
 		Type.Utility:
 			modulate = Color(0, 0, 1, 1)
-			title = "Utility"
 		Type.Chance:
 			modulate = Color(1, 0, 0, 1)
-			title = "Chance"
-		Type.CommunityChest:
+		Type.Luxury:
 			modulate = Color(1, 1, 0, 1)
-			title = "Community Chest"
-		Type.Luxuries:
+		Type.Taxes:
 			modulate = Color(0, 1, 0, 1)
-			title = "Luxuries"
-		Type.BluebloodsEstate:
-			title = "Blueblood's Estate"
-		Type.CollegeOrFreeLand:
-			title = "Free Land"
-		Type.Jail:
-			title = "Jail"	

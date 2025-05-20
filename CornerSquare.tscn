@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://coeepal6ubv7m"]
+
+[ext_resource type="Texture2D" uid="uid://d30nmjmahfmd" path="res://icon.svg" id="1_4xp8s"]
+[ext_resource type="Script" uid="uid://dnvgakkgay4fc" path="res://scripts/Square.gd" id="2_r2t6n"]
+
+[node name="CornerSquare" type="Sprite2D"]
+modulate = Color(0.443137, 0, 0.309804, 1)
+texture = ExtResource("1_4xp8s")
+script = ExtResource("2_r2t6n")
+type = 1
