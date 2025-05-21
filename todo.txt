@@ -1,3 +1,5 @@
 every square on the board should be clickable for information
 maybe we put a '?' in top right corner or magnifying glass
 could highlight square that will be landed on and allow for actions prior to landing?
+calculate rent correctly (house rent is constant!)
+implement buying houses

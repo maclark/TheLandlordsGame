@@ -41,8 +41,12 @@ var skip_move_animation:	bool = false
 @onready var auction_high_bid:		Label = get_node("%AuctionUI/HighBid")
 @onready var auction_bidders:		Label = get_node("%AuctionUI/HighBidders")
 
+
 var single_taxing:			bool = false
+var public_treasury:		int = 0
 var current_laps:			int = 0
+var chance_deck:			ChanceDeck = null
+var luxury_deck:			LuxuryDeck = null
 var square_going_to:		Square = null
 var square_came_from:		Square = null
 var current_player_money:	Label = null
@@ -76,7 +80,10 @@ enum Mode {
 }
 
 func reset_settings() -> void:
-	start_money 			= Landlord.START_MONEY
+	start_money = 400
+	match (players.size()):
+		2: start_money = 600
+		3: start_money = 500
 	labor_on_mother_earth 	= Landlord.LABOR_ON_MOTHER_EARTH
 	time_per_turn 			= Landlord.TIME_PER_TURN
 	time_per_bid 			= Landlord.TIME_PER_BID
@@ -90,6 +97,9 @@ func init_board(new_id : int, new_lord : Landlord, new_host : User) -> void:
 	id = new_id
 	lord = new_lord
 	host = new_host 
+	chance_deck = lord.ChanceDeckClass.new()
+	luxury_deck = lord.LuxuryDeckClass.new()
+		
 	start_butt.pressed.connect(start_game)
 	
 	var add_ai_button: Button = get_node("%AddAI")
@@ -99,7 +109,6 @@ func init_board(new_id : int, new_lord : Landlord, new_host : User) -> void:
 	var stand_up_button: Button = get_node("%StandUp")
 	stand_up_button.pressed.connect(stand_up)
 	
-	# connect buttons
 	roll_butt.pressed.connect(roll_dice)
 	bid_butt.pressed.connect(bid_submitted)
 	pass_bid_butt.pressed.connect(pass_bid_pressed)
@@ -115,7 +124,7 @@ func init_board(new_id : int, new_lord : Landlord, new_host : User) -> void:
 	var noncurrent_pass_bid_butt = noncurrent_ui.get_node("Pass2")
 	noncurrent_pass_bid_butt.pressed.connect(pass_bid) # i think ok
 	
-	# make board squares
+	# start with Mother Earth (GO) in bot right and go clockwise
 	make_square(Square.Type.Go, "MOTHER EARTH", 0, 0)
 	make_square(Square.Type.Property, "WAYBACK", 25, 0)
 	make_square(Square.Type.Taxes, "FUEL", 10, 0)
@@ -277,7 +286,6 @@ func simulate_game(delta: float) -> void:
 			while keep_going:
 				var step = delta * move_speed
 				var next_square_index = current_player.square.num + 1
-				print("next_square_index %d" % next_square_index)
 				if next_square_index == squares.size():
 					next_square_index = 0
 				var to_destination = squares[next_square_index].position - current_player.token.position 
@@ -286,7 +294,6 @@ func simulate_game(delta: float) -> void:
 					if next_square_index == 0: # we've reached Go!
 						current_laps += 1
 					current_player.square = squares[next_square_index]
-					print("current_player.square: %s(%d)" % [current_player.square.title, current_player.square.num])
 					if current_player.square == square_going_to:
 						skip_move_animation = false
 						place_player_token(current_player, square_going_to)
@@ -490,25 +497,41 @@ func charge_rent(tenant: Player, square: Square) -> void:
 	var rent = 10
 	match square.type:
 		Square.Type.Property:
-			rent = square.sale_price + square.houses * square.house_rent
+			rent = square.land_rent + square.houses * lord.HOUSE_RENT
 		Square.Type.Utility:
-			#TODO
-			pass
+			rent = 5
+			if square.lord:
+				var utilities_owned = square.lord.properties.filter(func(sqr): return sqr.type == Square.Type.Utility)
+				# a "municipal cinch"!
+				if utilities_owned.size() == 2:
+					rent = 25
 		Square.Type.Railroad:
-			#TODO
-			pass
-		
+			rent = 5
+			if square.lord:
+				var rrs_owned = square.lord.properties.filter(func(sqr): return sqr.type == Square.Type.Utility).size()
+				match rrs_owned:
+					2: rent = 10
+					3: rent = 20
+					4: rent = 50
+					_: push_warning("how do you own %d rrs?" % rrs_owned)
+		_:  push_warning("unhandled square is charging rent?: %s" % square.nickname)
+	
 	if tenant.money >= rent:
-		print(tenant.nickname + " paid rent $%d(-$%d)" % [tenant.money, rent])
 		tenant.money -= rent
-		square.lord.money += rent
 		update_money(tenant)
-		update_money(square.lord)
+		if square.lod:
+			update_money(square.lord)
+			square.lord.money += rent
+			print(tenant.nickname + " paid rent $%d(-$%d) to %s" % [tenant.money, rent, square.lord.nickname])
+		else:
+			public_treasury += rent
+			print(tenant.nickname + " paid rent $%d(-$%d) to public treasury" % [tenant.money, rent])
 		mode = Mode.WaitingForEndTurn
 	else:
 		if tenant.is_ai:
 			pass
 			# TODO bankruptcy!
+			# offer selling of goods or something?
 		
 func start_auction(for_sale : Square) -> void:
 	print("start bidding for %s" % for_sale.title)
@@ -535,6 +558,7 @@ func conclude_auction() -> void:
 			winner = top_bidders.pick_random()
 	elif top_bidders.size() == 0:
 		# TODO auction with no winner?
+		# paid into PUBLIC TREASURY (maybe this does nothing until LVT?)
 		pass
 	else:
 		winner = top_bidders[0]

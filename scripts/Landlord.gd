@@ -3,7 +3,7 @@ extends Node2D
 
 # TODO a chat! duh, ugh
 
-@onready var listings:				Node2D = $Listings
+@onready var listings:		Node2D = $Listings
 
 var BoardListingScene 		= preload("res://BoardListing.tscn")
 var GameBoardScene 			= preload("res://GameBoard.tscn")
@@ -12,6 +12,8 @@ var CornerSquareScene		= preload("res://CornerSquare.tscn")
 var PlayerTokenScene 		= preload("res://PlayerToken.tscn")
 var PlayerClass 			= preload("res://scripts/Player.gd")
 var UserClass 				= preload("res://scripts/User.gd")
+var ChanceDeckClass 		= preload("res://scripts/ChanceDeck.gd")
+var LuxuryDeckClass 		= preload("res://scripts/LuxuryDeck.gd")
 var board_listings:			Array[BoardListing] = []
 var default_player_names: 	Array[String] = []
 var hosting_button: 		Button = null
@@ -23,7 +25,9 @@ const MAX_PLAYERS 				= 99
 const LABOR_ON_MOTHER_EARTH 	= 200
 const TIME_PER_TURN 			= 60.0
 const TIME_PER_BID 				= 1000.0
-const START_MONEY 				= 1500
+const BEGINNER_START_MONEY		= 75
+const HOUSE_RENT				= 10
+const IMPROVEMENT_COST			= 100
 const PLAYER_COLORS = [Color.DARK_RED, Color.AQUA, Color.CHARTREUSE, Color.YELLOW]
 
 func _ready() -> void:
