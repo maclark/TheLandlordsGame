@@ -274,11 +274,6 @@ func _process(delta: float) -> void:
 		if not paused:
 			simulate_game(delta)
 			
-func _input(event):
-	if event is InputEventMouseButton and event.pressed:
-		var mouse_pos = get_viewport().get_mouse_position()
-		print("Mouse position: ", mouse_pos)		
-			
 func simulate_game(delta: float) -> void:
 	match mode:
 		Mode.Moving:
@@ -519,7 +514,7 @@ func charge_rent(tenant: Player, square: Square) -> void:
 	if tenant.money >= rent:
 		tenant.money -= rent
 		update_money(tenant)
-		if square.lod:
+		if square.lord:
 			update_money(square.lord)
 			square.lord.money += rent
 			print(tenant.nickname + " paid rent $%d(-$%d) to %s" % [tenant.money, rent, square.lord.nickname])
