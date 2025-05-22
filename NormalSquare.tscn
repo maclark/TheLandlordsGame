@@ -1,14 +1,14 @@
-[gd_scene load_steps=3 format=3 uid="uid://cgxabbrci58n6"]
+[gd_scene load_steps=3 format=3 uid="uid://1y51hcobj0tr"]
 
-[ext_resource type="Texture2D" uid="uid://ipf7iv5ex20" path="res://white-square.png" id="2_rk711"]
-[ext_resource type="Script" uid="uid://dnvgakkgay4fc" path="res://scripts/Square.gd" id="2_wkptf"]
+[ext_resource type="Script" uid="uid://dnvgakkgay4fc" path="res://scripts/Square.gd" id="1_rk711"]
+[ext_resource type="Texture2D" uid="uid://ipf7iv5ex20" path="res://white-square.png" id="2_wkptf"]
 
 [node name="Square" type="Node2D"]
-script = ExtResource("2_wkptf")
+script = ExtResource("1_rk711")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 scale = Vector2(0.33, 1)
-texture = ExtResource("2_rk711")
+texture = ExtResource("2_wkptf")
 
 [node name="Label" type="Label" parent="."]
 offset_left = 10.0
