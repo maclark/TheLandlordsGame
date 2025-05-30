@@ -327,7 +327,8 @@ func simulate_game(delta: float) -> void:
 
 func skip_input() -> void:
 	if mode == Mode.Bidding:
-		conclude_auction()
+		bidders = top_bidders
+		next_bidder();
 	end_turn()
 
 func add_ai() -> void:
@@ -628,40 +629,41 @@ func bid(p: Player, amount: int) -> void:
 		auction_high_bid.text = "High Bid: " + str(top_bid)
 		auction_bidders.text = "High Bidder: " + p.nickname 
 		print("%s bid $%d" % [p.nickname, amount])
-		if bidders.size() > 1:
-			next_bidder()
-		else: # this was the last person who could have bid
-			conclude_auction()
+		next_bidder();
+		
 		
 func next_bidder() -> void:
-	bidder_index = (bidder_index + 1) % bidders.size()
-	noncurrent_ui.visible = false
-	var bidder: Player = bidders[bidder_index] 
-	if bidder.is_ai:
-		print("next bidder is ai: " + bidder.nickname)
-		if bidder.money > top_bid + min_bid_increment:
-			# let's say 50/50 they bid
-			var roll = randf()
-			print("ai rolled: " + str(roll))
-			if roll > .5:
-				bid(bidder, top_bid + min_bid_increment)
-			else:
-				pass_bid()
-	elif bidder == current_player:
-		print("next bidder is current_player: " + bidder.nickname)
-		bid_butt.disabled = false
-		pass_bid_butt.disabled = false
-	elif bidder.user == current_player.user:
-		print("next bidder is local player: " + bidder.nickname)
-		noncurrent_ui.visible = true
-		bid_butt.disabled = true
-		pass_bid_butt.disabled = true
+	if bidders.size() == top_bidders.size():
+		conclude_auction()	
 	else:
-		print("next bidder is network player:" + bidder.nickname)
-		pass
-		
-	bid_timer = time_per_bid
-	bid_clock.text = str(floor(bid_timer))
+		bidder_index = (bidder_index + 1) % bidders.size()
+		noncurrent_ui.visible = false
+		var bidder: Player = bidders[bidder_index] 
+		if bidder.is_ai:
+			print("next bidder is ai: " + bidder.nickname)
+			if bidder.money > top_bid + min_bid_increment:
+				# let's say 50/50 they bid
+				var roll = randf()
+				print("ai rolled: " + str(roll))
+				if roll > .5:
+					bid(bidder, top_bid + min_bid_increment)
+				else:
+					pass_bid()
+		elif bidder == current_player:
+			print("next bidder is current_player: " + bidder.nickname)
+			bid_butt.disabled = false
+			pass_bid_butt.disabled = false
+		elif bidder.user == current_player.user:
+			print("next bidder is local player: " + bidder.nickname)
+			noncurrent_ui.visible = true
+			bid_butt.disabled = true
+			pass_bid_butt.disabled = true
+		else:
+			print("next bidder is network player:" + bidder.nickname)
+			pass
+			
+		bid_timer = time_per_bid
+		bid_clock.text = str(floor(bid_timer))
 	
 func process_square(p : Player, _came_from : Square, landed_on : Square) -> void:
 	roll_butt.disabled = true

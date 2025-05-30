@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://t1etn3wmeabe"]
+
+[ext_resource type="Script" uid="uid://mbxr53kp7xlv" path="res://Inventory.gd" id="1_pohso"]
+
+[node name="Inventory" type="Node2D"]
+script = ExtResource("1_pohso")
+hover_speed = null

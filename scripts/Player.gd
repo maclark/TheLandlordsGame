@@ -9,3 +9,5 @@ var money: int
 var properties: Array[Square] = []
 var in_jail: bool = false
 var left_game: bool = false
+var luxuries: Array[String] = []
+var get_out_of_jails: int = 0

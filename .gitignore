@@ -1,5 +1,5 @@
 # Godot 4+ specific ignores
-.godot/
+# .godot/ # this caused laptop UIDs to mismatch, chatgpt said this was bad
 .import/
 *.godot/imported/*
 *.import
