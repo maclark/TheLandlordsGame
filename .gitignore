@@ -1,20 +1,20 @@
 # Godot 4+ specific ignores
-# .godot/ # this caused laptop UIDs to mismatch, chatgpt said this was bad
-.import/
-*.godot/imported/*
-*.import
-*.uid
+# .godot/ # this caused laptop UIDs to mismatch, chatgpt said this was bad, but still ignore these:
+.godot/shader_cache/
+.godot/editor/
+.godot/imported/
 
-
-# Godot-specific ignores
+# (idk where .import will exist)
 .import/
+
+# Godot-specific ignores (i mean, so were the above?)
 export.cfg
 export_credentials.cfg
 
 # Imported translations (automatically generated from CSV files)
 *.translation
 
-# Mono-specific ignores
+# Mono-specific ignores (i guess if i use c#)
 .mono/
 data_*/
 mono_crash.*.json
